@@ -1,0 +1,14 @@
+__pycache__/
+*.pyc
+.venv/
+venv/
+output.xml
+*.png
+*.jpg
+
+# Root-level robot output (from ad-hoc runs)
+/log.html
+/report.html
+
+# results/ directories contain committed reports for GitHub Pages
+# Do NOT ignore results/log.html and results/report.html

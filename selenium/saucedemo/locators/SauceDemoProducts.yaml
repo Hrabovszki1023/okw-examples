@@ -1,0 +1,23 @@
+__self__:
+  class: okw_web_selenium.widgets.webse_label.WebSe_Label
+  locator: { css: '[data-test="inventory-container"]' }
+
+Titel:
+  class: okw_web_selenium.widgets.webse_label.WebSe_Label
+  locator: { css: '[data-test="title"]' }
+
+ProduktKarte:
+  __context__:
+    locator: { xpath: '//div[@data-test="inventory-item"][.//div[@data-test="inventory-item-name" and text()="{ProduktName}"]]' }
+  Produktname:
+    class: okw_web_selenium.widgets.webse_label.WebSe_Label
+    locator: { xpath: './/div[@data-test="inventory-item-name"]' }
+  Produktbeschreibung:
+    class: okw_web_selenium.widgets.webse_label.WebSe_Label
+    locator: { xpath: './/div[@data-test="inventory-item-desc"]' }
+  Produktpreis:
+    class: okw_web_selenium.widgets.webse_label.WebSe_Label
+    locator: { xpath: './/div[@data-test="inventory-item-price"]' }
+  InDenWarenkorb:
+    class: okw_web_selenium.widgets.webse_button.WebSe_Button
+    locator: { xpath: './/button' }

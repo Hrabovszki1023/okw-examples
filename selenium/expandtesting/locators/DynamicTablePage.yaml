@@ -1,0 +1,11 @@
+__self__:
+  class: okw_web_selenium.widgets.webse_label.WebSe_Label
+  locator: { css: '.container' }
+
+TaskManager:
+  class: okw_web_selenium.widgets.webse_table.WebSe_Table
+  locator: { css: 'table' }
+
+ChromeCpuLabel:
+  class: okw_web_selenium.widgets.webse_label.WebSe_Label
+  locator: { css: '.bg-warning' }

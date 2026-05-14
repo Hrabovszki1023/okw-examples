@@ -1,0 +1,6 @@
+MyAppChrome:
+  __self__:
+    class: okw_web_selenium.adapters.selenium_web.SeleniumWebAdapter
+    browser: chrome
+  Chrome: !include Chrome.yaml
+  _pages: !include-merge Allpages.yaml

@@ -1,0 +1,2 @@
+SauceDemoLogin: !include SauceDemoLogin.yaml
+SauceDemoProducts: !include SauceDemoProducts.yaml
