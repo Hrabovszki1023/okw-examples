@@ -1,0 +1,40 @@
+__self__:
+  class: okw_web_selenium.widgets.webse_label.WebSe_Label
+  locator: { css: '.container' }
+
+# --- Formular-Elemente ---
+Parkplatz:
+  class: okw_web_selenium.widgets.webse_combobox.WebSe_ComboBox
+  locator: { id: parkingLot }
+
+# Flatpickr-Felder: Projektspezifische Widgets statt WebSe_TextField.
+# WebPark_DateField/TimeField ueberschreiben okw_set_value() mit
+# Click → Ctrl+A → Delete → TypeKey → Escape (Flatpickr ist readonly).
+EingangDatum:
+  class: widgets.webpark_datefield.WebPark_DateField
+  locator: { id: entryDate }
+
+EingangZeit:
+  class: widgets.webpark_timefield.WebPark_TimeField
+  locator: { id: entryTime }
+
+AusgangDatum:
+  class: widgets.webpark_datefield.WebPark_DateField
+  locator: { id: exitDate }
+
+AusgangZeit:
+  class: widgets.webpark_timefield.WebPark_TimeField
+  locator: { id: exitTime }
+
+KostenBerechnen:
+  class: okw_web_selenium.widgets.webse_button.WebSe_Button
+  locator: { id: calculateCost }
+
+# --- Ergebnis-Anzeige ---
+Ergebnis:
+  class: okw_web_selenium.widgets.webse_label.WebSe_Label
+  locator: { id: resultValue }
+
+ErgebnisMeldung:
+  class: okw_web_selenium.widgets.webse_label.WebSe_Label
+  locator: { id: resultMessage }

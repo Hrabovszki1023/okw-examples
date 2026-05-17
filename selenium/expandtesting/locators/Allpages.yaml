@@ -1,2 +1,3 @@
 DynamicTablePage: !include DynamicTablePage.yaml
 HoversPage: !include HoversPage.yaml
+WebParkPage: !include WebParkPage.yaml
