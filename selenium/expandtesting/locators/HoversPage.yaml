@@ -1,0 +1,25 @@
+__self__:
+  class: okw_web_selenium.widgets.webse_label.WebSe_Label
+  locator: { css: '.container' }
+
+# --- Direct widgets (without context) ---
+Seitentitel:
+  class: okw_web_selenium.widgets.webse_label.WebSe_Label
+  locator: { css: 'h1' }
+
+# --- Context: UserCard (repeating structure) ---
+UserCard:
+  __context__:
+    locator: { xpath: '//div[@class="figure"][.//h5[contains(text(),"{UserName}")]]' }
+  Avatar:
+    class: okw_web_selenium.widgets.webse_label.WebSe_Label
+    locator: { xpath: './/img[@alt="User Avatar"]' }
+  UserInfo:
+    class: okw_web_selenium.widgets.webse_label.WebSe_Label
+    locator: { xpath: './/div[@class="figcaption"]' }
+  Benutzername:
+    class: okw_web_selenium.widgets.webse_label.WebSe_Label
+    locator: { xpath: './/h5' }
+  ProfilLink:
+    class: okw_web_selenium.widgets.webse_button.WebSe_Button
+    locator: { xpath: './/a[text()="View profile"]' }

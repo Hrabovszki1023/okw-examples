@@ -1,1 +1,2 @@
 DynamicTablePage: !include DynamicTablePage.yaml
+HoversPage: !include HoversPage.yaml
