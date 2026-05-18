@@ -1,0 +1,53 @@
+__self__:
+  class: okw_web_selenium.widgets.webse_label.WebSe_Label
+  locator: { css: '.container' }
+
+# --- 'visible' Karte: Buttons ---
+SichtbarerButton:
+  class: okw_web_selenium.widgets.webse_button.WebSe_Button
+  locator: { id: btn1 }
+
+VersteckterButton:
+  class: okw_web_selenium.widgets.webse_button.WebSe_Button
+  locator: { id: btn2 }
+
+# --- 'visible' Karte: Listen ---
+SichtbareListe:
+  class: okw_web_selenium.widgets.webse_label.WebSe_Label
+  locator: { id: ul1 }
+
+VersteckteListe:
+  class: okw_web_selenium.widgets.webse_label.WebSe_Label
+  locator: { id: ul2 }
+
+# --- 'checked' Karte: Checkboxen ---
+AktiveCheckbox:
+  class: okw_web_selenium.widgets.webse_checkbox.WebSe_CheckBox
+  locator: { id: cb1 }
+
+InaktiveCheckbox:
+  class: okw_web_selenium.widgets.webse_checkbox.WebSe_CheckBox
+  locator: { id: cb2 }
+
+# --- 'empty' Karte: Divs ---
+LeererBereich:
+  class: okw_web_selenium.widgets.webse_label.WebSe_Label
+  locator: { id: div1 }
+
+GefuellterBereich:
+  class: okw_web_selenium.widgets.webse_label.WebSe_Label
+  locator: { id: div2 }
+
+# --- 'enabled' / 'disabled' Karte ---
+AktiverButton:
+  class: okw_web_selenium.widgets.webse_button.WebSe_Button
+  locator: { id: btn3 }
+
+DeaktivierterButton:
+  class: okw_web_selenium.widgets.webse_button.WebSe_Button
+  locator: { id: btn4 }
+
+# --- 'a' Karte: Zahlenfeld ---
+Zahlenwert:
+  class: okw_web_selenium.widgets.webse_textfield.WebSe_TextField
+  locator: { id: a_number }
