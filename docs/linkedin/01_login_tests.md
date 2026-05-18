@@ -50,9 +50,14 @@ Login Fehlgeschlagen Mit Meldung
 
 `SetValue`, `ClickOn`, `VerifyValue` — these are the **only keywords you need**. They work across any GUI technology: web, desktop, mobile. The same test could run on a Java Swing app tomorrow without changing a single line of test logic.
 
+This isn't a new idea — it's a standard. The keyword-driven testing approach is defined in [ISO/IEC/IEEE 29119-5](https://www.iso.org/standard/81234.html). OKW implements this standard for Robot Framework.
+
 ## Where Are the Locators?
 
-In a YAML file. Completely separate from the test:
+In a YAML file. Completely separate from the test. The YAML serves two purposes:
+
+1. **Abstract naming.** The test says `Benutzer` — a logical name. The YAML maps it to the concrete locator (`css`, `xpath`, `id`) depending on the driver or environment.
+2. **Widget behavior.** The `class` defines *how* keyword actions are executed against each GUI element type. A `TextField` knows how to `SetValue` (clear + type). A `Button` knows how to `ClickOn`. These behaviors are predefined — but customizable when needed.
 
 ```yaml
 # SauceDemoLogin.yaml
@@ -73,7 +78,7 @@ Fehlermeldung:
   locator: { css: '[data-test="error"]' }
 ```
 
-Four widgets. One file. When the `data-test` attribute changes, you fix it here — once — and all 11 test cases keep working.
+Four widgets. One file. Each widget knows its location *and* its behavior. When the `data-test` attribute changes, you fix it here — once — and all 11 test cases keep working.
 
 ## 11 Tests, Zero Redundancy
 
