@@ -7,33 +7,49 @@ Test Teardown  StopApp    MyAppChrome
 ${URL}    https://practice.expandtesting.com/iframe
 
 *** Test Cases ***
+# === Hauptseite ===
+
 Seitentitel Ausserhalb IFrame
     [Documentation]    Prueft den Seitentitel auf der Hauptseite (kein iFrame).
     VerifyValueWCM    Seitentitel    *IFrame*
+
+# === Email Subscribe IFrame ===
 
 Email IFrame Ueberschrift Lesen
     [Documentation]    Prueft die Ueberschrift im Email-Subscribe-IFrame.
     VerifyValueWCM    IFrameUeberschrift    *inbox*
 
-Email IFrame Button Existiert
-    [Documentation]    Prueft, dass der Subscribe-Button im IFrame existiert.
-    VerifyExist    AbonnierenButton    YES
-
 Email IFrame Button Text
     [Documentation]    Prueft den Text des Subscribe-Buttons im IFrame.
     VerifyValue    AbonnierenButton    Subscribe
 
-TinyMCE IFrame Editor Lesen
+Email Abonnieren Erfolgreich
+    [Documentation]    Gibt eine Email ein und prueft die Erfolgsmeldung.
+    SetValue       EmailEingabe        test@example.com
+    ClickOn        AbonnierenButton
+    VerifyValue    Erfolgsmeldung      You are now subscribed!
+
+# === TinyMCE Editor IFrame ===
+
+TinyMCE Standardtext Lesen
     [Documentation]    Prueft den Standardtext im TinyMCE-Editor-IFrame.
     VerifyValueWCM    EditorBody    *content goes here*
 
-Hauptseite Und IFrame Nacheinander
-    [Documentation]    Prueft, dass OKW nahtlos zwischen Hauptseite und
-    ...    IFrame hin- und herwechselt.
+# === Uebergreifend: Wechsel zwischen IFrames ===
+
+Hauptseite Und Email IFrame Nacheinander
+    [Documentation]    Prueft nahtloses Wechseln zwischen Hauptseite und
+    ...    Email-Subscribe-IFrame.
     VerifyValueWCM    Seitentitel         *IFrame*
     VerifyValueWCM    IFrameUeberschrift  *inbox*
     VerifyValueWCM    Seitentitel         *IFrame*
-    VerifyValue        AbonnierenButton    Subscribe
+    VerifyValue       AbonnierenButton    Subscribe
+
+Zwischen Zwei IFrames Wechseln
+    [Documentation]    Prueft Wechsel zwischen Email-IFrame und TinyMCE-IFrame.
+    VerifyValue       AbonnierenButton    Subscribe
+    VerifyValueWCM    EditorBody          *content goes here*
+    VerifyValueWCM    IFrameUeberschrift  *inbox*
 
 *** Keywords ***
 IFrame Seite Oeffnen

@@ -23,6 +23,11 @@ IFrameUeberschrift:
   iframe: { id: email-subscribe }
   locator: { id: prompt-message }
 
+Erfolgsmeldung:
+  class: okw_web_selenium.widgets.webse_label.WebSe_Label
+  iframe: { id: email-subscribe }
+  locator: { id: success-message }
+
 # Elements inside the TinyMCE editor iframe
 EditorBody:
   class: okw_web_selenium.widgets.webse_label.WebSe_Label
