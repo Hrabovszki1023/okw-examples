@@ -1,4 +1,5 @@
 DragDropCirclesPage: !include DragDropCirclesPage.yaml
+IFramePage: !include IFramePage.yaml
 DragDropPage: !include DragDropPage.yaml
 DynamicTablePage: !include DynamicTablePage.yaml
 HoversPage: !include HoversPage.yaml

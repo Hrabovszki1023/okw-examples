@@ -1,0 +1,30 @@
+__self__:
+  class: okw_web_selenium.widgets.webse_label.WebSe_Label
+  locator: { css: '.container' }
+
+# Main page element (outside any iframe)
+Seitentitel:
+  class: okw_web_selenium.widgets.webse_label.WebSe_Label
+  locator: { xpath: '//h1' }
+
+# Elements inside the email-subscribe iframe
+EmailEingabe:
+  class: okw_web_selenium.widgets.webse_textfield.WebSe_TextField
+  iframe: { id: email-subscribe }
+  locator: { id: email }
+
+AbonnierenButton:
+  class: okw_web_selenium.widgets.webse_button.WebSe_Button
+  iframe: { id: email-subscribe }
+  locator: { id: btn-subscribe }
+
+IFrameUeberschrift:
+  class: okw_web_selenium.widgets.webse_label.WebSe_Label
+  iframe: { id: email-subscribe }
+  locator: { id: prompt-message }
+
+# Elements inside the TinyMCE editor iframe
+EditorBody:
+  class: okw_web_selenium.widgets.webse_label.WebSe_Label
+  iframe: { id: mce_0_ifr }
+  locator: { id: tinymce }
