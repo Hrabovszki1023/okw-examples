@@ -1,0 +1,14 @@
+__self__:
+  class: okw_web_selenium.widgets.webse_label.WebSe_Label
+  locator: { css: '.container' }
+
+# Normal DOM element (outside shadow DOM)
+NormalerButton:
+  class: okw_web_selenium.widgets.webse_button.WebSe_Button
+  locator: { id: my-btn }
+
+# Shadow DOM element — shadow_host says where to look
+ShadowButton:
+  class: okw_web_selenium.widgets.webse_button.WebSe_Button
+  shadow_host: { css: '#shadow-host' }
+  locator: { css: '#my-btn' }
