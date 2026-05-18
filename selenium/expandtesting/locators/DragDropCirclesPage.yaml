@@ -1,0 +1,26 @@
+__self__:
+  class: okw_web_selenium.widgets.webse_label.WebSe_Label
+  locator: { css: '.container' }
+
+# --- Draggable Kreise (Source) ---
+RoterKreis:
+  class: okw_web_selenium.widgets.webse_label.WebSe_Label
+  locator: { css: '#source .red' }
+
+GruenerKreis:
+  class: okw_web_selenium.widgets.webse_label.WebSe_Label
+  locator: { css: '#source .green' }
+
+BlauerKreis:
+  class: okw_web_selenium.widgets.webse_label.WebSe_Label
+  locator: { css: '#source .blue' }
+
+# --- Drop-Ziel ---
+Zielbereich:
+  class: okw_web_selenium.widgets.webse_label.WebSe_Label
+  locator: { id: target }
+
+# --- Quellbereich ---
+Quellbereich:
+  class: okw_web_selenium.widgets.webse_label.WebSe_Label
+  locator: { id: source }

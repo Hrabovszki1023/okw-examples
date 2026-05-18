@@ -1,0 +1,12 @@
+__self__:
+  class: okw_web_selenium.widgets.webse_label.WebSe_Label
+  locator: { css: '.container' }
+
+# --- Drag & Drop Spalten ---
+SpalteA:
+  class: okw_web_selenium.widgets.webse_label.WebSe_Label
+  locator: { id: column-a }
+
+SpalteB:
+  class: okw_web_selenium.widgets.webse_label.WebSe_Label
+  locator: { id: column-b }
