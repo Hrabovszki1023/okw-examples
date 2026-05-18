@@ -43,8 +43,9 @@ Alle Kreise In Zielbereich Ziehen
 
 *** Keywords ***
 DragDropCircles Seite Oeffnen
-    # Phase 1-3: App starten und zur DragDropCircles-Seite navigieren
     OnFailNOISE    StartApp       MyAppChrome
+
     OnFailNOISE    SelectWindow   Chrome
     OnFailNOISE    SetValue       URL    ${URL}
+
     OnFailNOISE    SelectWindow   DragDropCirclesPage

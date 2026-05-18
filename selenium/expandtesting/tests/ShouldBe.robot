@@ -59,8 +59,9 @@ Zahlenfeld Hat Wert 8
 
 *** Keywords ***
 ShouldBe Seite Oeffnen
-    # Phase 1-3: App starten und zur ShouldBe-Seite navigieren
     OnFailNOISE    StartApp       MyAppChrome
+
     OnFailNOISE    SelectWindow   Chrome
     OnFailNOISE    SetValue       URL    ${URL}
+
     OnFailNOISE    SelectWindow   ShouldBePage

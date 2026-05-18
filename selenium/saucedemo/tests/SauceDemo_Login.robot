@@ -8,31 +8,28 @@ ${URL}    https://www.saucedemo.com
 
 *** Keywords ***
 Login Seite Oeffnen
-    # Phase 1-3: App starten und zur Login-Seite navigieren
     OnFailNOISE    StartApp       MyAppChrome
+
     OnFailNOISE    SelectWindow   Chrome
     OnFailNOISE    SetValue       URL    ${URL}
 
 Anmelden Mit
     [Arguments]    ${benutzer}    ${passwort}
-    # Phase 3: Navigation zum Testzustand
+
     OnFailNOISE    SelectWindow   SauceDemoLogin
-    # Phase 4: Testaktion — Login ausfuehren
     SetValue       Benutzer    ${benutzer}
     SetValue       Passwort    ${passwort}
     ClickOn        Anmelden
 
 Login Erfolgreich
-    # Phase 3: Fensterwechsel ist Navigation
+
     OnFailNOISE    SelectWindow       SauceDemoProducts
-    # Phase 5: Verifikation
     VerifyValue        Titel    Products
 
 Login Fehlgeschlagen Mit Meldung
     [Arguments]    ${meldung}
-    # Phase 3: Fensterwechsel ist Navigation
+
     OnFailNOISE    SelectWindow       SauceDemoLogin
-    # Phase 5: Verifikation
     VerifyValue        Fehlermeldung    ${meldung}
 
 *** Test Cases ***

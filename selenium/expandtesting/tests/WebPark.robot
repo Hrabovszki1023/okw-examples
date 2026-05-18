@@ -104,10 +104,11 @@ Economy Parking Eine Woche
 
 *** Keywords ***
 WebPark Seite Oeffnen
-    # Phase 1-3: App starten und zur WebPark-Seite navigieren
     OnFailNOISE    StartApp       MyAppChrome
+
     OnFailNOISE    SelectWindow   Chrome
     OnFailNOISE    SetValue       URL    ${URL}
+
     OnFailNOISE    SelectWindow   WebParkPage
 
 Parkkosten Berechnen
