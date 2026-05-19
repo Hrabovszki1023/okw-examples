@@ -48,3 +48,4 @@ Login Seite Oeffnen
 
     OnFailNOISE    SelectWindow   Chrome
     OnFailNOISE    SetValue       URL    ${URL}
+    OnFailNOISE    VerifyWindowExists    LoginPage    YES
