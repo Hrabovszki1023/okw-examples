@@ -9,7 +9,7 @@
 - **MoveOver** keyword for mouse hover actions.
 - **SetContext** for repeating GUI structures (user cards).
 - Verifying **hidden elements** that only appear on hover.
-- **VerifyExist** to check element visibility.
+- **VerifyExists** to check element visibility.
 
 ## Page Specifics
 

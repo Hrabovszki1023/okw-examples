@@ -30,10 +30,10 @@ MoveOver zeigt User2 Info
 MoveOver ProfilLink wird sichtbar
     SetContext      UserCard    user1
     MoveOver        Avatar
-    VerifyExist     ProfilLink    YES
+    VerifyExists     ProfilLink    YES
 ```
 
-`SetContext` selects the card. `MoveOver` triggers the hover. `VerifyValueWCM` checks the revealed content. `VerifyExist` confirms the hidden link appeared.
+`SetContext` selects the card. `MoveOver` triggers the hover. `VerifyValueWCM` checks the revealed content. `VerifyExists` confirms the hidden link appeared.
 
 Same keywords, different context. Three user cards tested with zero code duplication.
 
@@ -66,7 +66,7 @@ The `__context__` pattern (from Part 2) scopes all child widgets to a specific u
 | Tooltip verification | `MoveOver Feld` → `VerifyTooltip Feld Hilfetext` |
 | Hidden overlay content | `MoveOver Avatar` → `VerifyValue Name admin` |
 | Dropdown menu trigger | `MoveOver Datei` → `ClickOn Neu` |
-| Existence check | `MoveOver Card` → `VerifyExist DeleteButton YES` |
+| Existence check | `MoveOver Card` → `VerifyExists DeleteButton YES` |
 
 `MoveOver` uses Selenium's ActionChains internally — the same mechanism — but wrapped in OKW's sync and retry logic. The element is waited for, scrolled into view, and then hovered.
 

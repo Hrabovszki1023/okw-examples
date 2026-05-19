@@ -13,7 +13,7 @@ Normaler Button Hat Text
 
 Shadow Button Existiert
     [Documentation]    Prueft, dass der Button im Shadow DOM gefunden wird.
-    VerifyExist    ShadowButton    YES
+    VerifyExists    ShadowButton    YES
 
 Shadow Button Hat Text
     [Documentation]    Prueft den Text des Buttons im Shadow DOM.

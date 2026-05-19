@@ -8,7 +8,7 @@
 
 - **DragTo** — drag individual elements into a drop zone.
 - **DragStart** + **Drop** — same result with the multi-step API.
-- **VerifyExist** — confirm that elements moved out of their
+- **VerifyExists** — confirm that elements moved out of their
   original container (DOM relocation via `appendChild`).
 - CSS-class-based locators (elements without IDs).
 
@@ -38,10 +38,10 @@ Each circle is dragged individually into the target area:
 ```robot
 Roten Kreis In Zielbereich Ziehen
     DragTo         RoterKreis    Zielbereich
-    VerifyExist    RoterKreis    NO
+    VerifyExists    RoterKreis    NO
 ```
 
-After the drop, `VerifyExist` with `NO` confirms the circle is no
+After the drop, `VerifyExists` with `NO` confirms the circle is no
 longer in its original `#source` container (the CSS locator
 `#source .red` no longer matches).
 

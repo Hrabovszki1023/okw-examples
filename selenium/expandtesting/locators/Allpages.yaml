@@ -5,4 +5,6 @@ DynamicTablePage: !include DynamicTablePage.yaml
 HoversPage: !include HoversPage.yaml
 ShadowDomPage: !include ShadowDomPage.yaml
 ShouldBePage: !include ShouldBePage.yaml
+LoginPage: !include LoginPage.yaml
+SecurePage: !include SecurePage.yaml
 WebParkPage: !include WebParkPage.yaml

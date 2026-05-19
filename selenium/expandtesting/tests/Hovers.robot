@@ -31,7 +31,7 @@ MoveOver ProfilLink wird sichtbar
     ...    sichtbar und klickbar wird.
     OnFailNOISE    SetContext      UserCard    user1
     MoveOver        Avatar
-    VerifyExist     ProfilLink    YES
+    VerifyExists     ProfilLink    YES
 
 *** Keywords ***
 Hovers Seite Oeffnen
