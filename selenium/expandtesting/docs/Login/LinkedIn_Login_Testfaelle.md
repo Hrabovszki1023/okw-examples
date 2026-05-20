@@ -118,9 +118,12 @@ Fehlerhaftes Passwort
 
 *** Keywords ***
 Login Seite Oeffnen
-    OnFailNOISE    StartApp       MyAppChrome
-    OnFailNOISE    SelectWindow   Chrome
-    OnFailNOISE    SetValue       URL    ${URL}
+    OnFailNOISE          StartApp       MyAppChrome
+
+    OnFailNOISE          SelectWindow   Chrome
+    OnFailNOISE          SetValue       URL    ${URL}
+    OnFailIgnoreNOISE    RemoveAds
+    OnFailNOISE          VerifyWindowExists    LoginPage    YES
 ```
 
 ---

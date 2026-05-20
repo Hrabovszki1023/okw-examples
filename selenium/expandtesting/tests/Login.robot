@@ -10,6 +10,7 @@ ${URL}    https://practice.expandtesting.com/login
 Erfolgreicher Login
     [Documentation]    Prueft den Login mit gueltigem Benutzer und Passwort.
     ...    Nach dem Login wird die Secure-Seite angezeigt mit Willkommensmeldung.
+
     SelectWindow       LoginPage
     SetValue           Benutzer       practice
     SetValue           Passwort       SuperSecretPassword!
@@ -44,8 +45,9 @@ Fehlerhaftes Passwort
 
 *** Keywords ***
 Login Seite Oeffnen
-    OnFailNOISE    StartApp       MyAppChrome
+    OnFailNOISE          StartApp       MyAppChrome
 
-    OnFailNOISE    SelectWindow   Chrome
-    OnFailNOISE    SetValue       URL    ${URL}
-    OnFailNOISE    VerifyWindowExists    LoginPage    YES
+    OnFailNOISE          SelectWindow   Chrome
+    OnFailNOISE          SetValue       URL    ${URL}
+    OnFailIgnoreNOISE    RemoveAds
+    OnFailNOISE          VerifyWindowExists    LoginPage    YES
