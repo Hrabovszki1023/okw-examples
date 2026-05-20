@@ -6,5 +6,6 @@ HoversPage: !include HoversPage.yaml
 ShadowDomPage: !include ShadowDomPage.yaml
 ShouldBePage: !include ShouldBePage.yaml
 LoginPage: !include LoginPage.yaml
+RegisterPage: !include RegisterPage.yaml
 SecurePage: !include SecurePage.yaml
 WebParkPage: !include WebParkPage.yaml
