@@ -4,7 +4,7 @@ Test Setup     Login Seite Oeffnen
 Test Teardown  StopApp    MyAppChrome
 
 *** Variables ***
-${URL}    https://practice.expandtesting.com/loginn
+${URL}    https://practice.expandtesting.com/login
 
 *** Test Cases ***
 Erfolgreicher Login
