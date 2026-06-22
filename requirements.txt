@@ -2,3 +2,4 @@ robotframework>=7.0
 robotframework-okw4robot
 robotframework-okw-web-selenium
 robotframework-okw-api-rest
+robotframework-okw-remote-ssh
