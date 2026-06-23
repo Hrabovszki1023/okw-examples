@@ -33,8 +33,12 @@ SOURCES: list[tuple[str, str]] = [
         "robotframework/robotframework-okw-api-rest/prompts/okw-rest-test-generator.md",
     ),
     (
-        "OKW Environment Provisioning (okw-env / okw-env-docker)",
+        "OKW Environment Provisioning (okw-env)",
         "robotframework/robotframework-okw-env/prompts/okw-env-generator.md",
+    ),
+    (
+        "OKW Docker Provider + docker-compose Conversion (okw-env-docker)",
+        "robotframework/robotframework-okw-env-docker/prompts/okw-env-docker-generator.md",
     ),
 ]
 
