@@ -19,12 +19,17 @@ jobs:
             --extra-index-url https://pypi.org/simple/ \
             robotframework-okw-api-rest
 
-      - name: Run REST API tests
+      - name: Run REST JSONPlaceholder tests
         run: |
           . venv/bin/activate
-          robot --outputdir results/rest-api \
-            rest-api/jsonplaceholder/tests/ \
-            rest-api/dummyjson/tests/REST_DummyJSON.robot
+          cd rest-api/jsonplaceholder
+          robot --outputdir ../../results/jsonplaceholder tests/
+
+      - name: Run REST DummyJSON tests
+        run: |
+          . venv/bin/activate
+          cd rest-api/dummyjson
+          robot --outputdir ../../results/dummyjson tests/REST_DummyJSON.robot
 
   selenium-tests:
     runs-on: ubuntu-latest
@@ -41,11 +46,12 @@ jobs:
             --extra-index-url https://pypi.org/simple/ \
             robotframework-okw-web-selenium
 
-      - name: Run Selenium tests (headless Chrome)
+      - name: Run Selenium ExpandTesting tests (headless Chrome)
         run: |
           . venv/bin/activate
-          robot --outputdir results/selenium \
-            selenium/expandtesting/tests/DynamicTable.robot \
-            selenium/expandtesting/tests/Login.robot \
-            selenium/expandtesting/tests/Hovers.robot \
-            selenium/expandtesting/tests/ShouldBe.robot
+          cd selenium/expandtesting
+          robot --outputdir ../../results/selenium \
+            tests/DynamicTable.robot \
+            tests/Login.robot \
+            tests/Hovers.robot \
+            tests/ShouldBe.robot
