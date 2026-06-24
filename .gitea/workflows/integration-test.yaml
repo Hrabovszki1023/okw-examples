@@ -2,7 +2,7 @@ name: "Stage 3: Integration Test (TestPyPI)"
 
 on:
   push:
-    branches: [main]
+    branches: [master]
   workflow_dispatch:
 
 jobs:
