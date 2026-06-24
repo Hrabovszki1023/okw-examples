@@ -1,0 +1,51 @@
+name: "Stage 3: Integration Test (TestPyPI)"
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  rest-api-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install packages from TestPyPI
+        run: |
+          python3 -m venv venv
+          . venv/bin/activate
+          pip install --index-url https://test.pypi.org/simple/ \
+            --extra-index-url https://pypi.org/simple/ \
+            robotframework-okw-api-rest
+
+      - name: Run REST API tests
+        run: |
+          . venv/bin/activate
+          robot --outputdir results/rest-api \
+            rest-api/jsonplaceholder/tests/ \
+            rest-api/dummyjson/tests/REST_DummyJSON.robot
+
+  selenium-tests:
+    runs-on: ubuntu-latest
+    env:
+      OKW_BROWSER_HEADLESS: "true"
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install packages from TestPyPI
+        run: |
+          python3 -m venv venv
+          . venv/bin/activate
+          pip install --index-url https://test.pypi.org/simple/ \
+            --extra-index-url https://pypi.org/simple/ \
+            robotframework-okw-web-selenium
+
+      - name: Run Selenium tests (headless Chrome)
+        run: |
+          . venv/bin/activate
+          robot --outputdir results/selenium \
+            selenium/expandtesting/tests/DynamicTable.robot \
+            selenium/expandtesting/tests/Login.robot \
+            selenium/expandtesting/tests/Hovers.robot \
+            selenium/expandtesting/tests/ShouldBe.robot
