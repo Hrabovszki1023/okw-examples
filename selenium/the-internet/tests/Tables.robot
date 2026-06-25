@@ -30,7 +30,7 @@ Spalteninhalt Pruefen
 
     SelectWindow       TablesPage
 
-    VerifyTableColumnContent    Tabelle1    1    Smith$TABBach$TABDoe$TABConway
+    VerifyTableColumnContent    Tabelle1    1    Smith$LFBach$LFDoe$LFConway
 
 Zeilenanzahl Pruefen
     [Documentation]    Prueft die Anzahl der Datenzeilen in der Tabelle.
