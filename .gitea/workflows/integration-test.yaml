@@ -31,6 +31,34 @@ jobs:
           cd rest-api/dummyjson
           robot --outputdir ../../results/dummyjson tests/REST_DummyJSON.robot
 
+  smoke-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install all OKW packages from TestPyPI
+        run: |
+          python3 -m venv venv
+          . venv/bin/activate
+          pip install --index-url https://test.pypi.org/simple/ \
+            --extra-index-url https://pypi.org/simple/ \
+            okw-contract-utils \
+            robotframework-okw4robot \
+            robotframework-okw-env \
+            robotframework-okw-remote-ssh \
+            robotframework-okw-env-docker
+
+      - name: Verify imports
+        run: |
+          . venv/bin/activate
+          python3 -c "
+          import okw_contract_utils; print('okw-contract-utils OK')
+          import okw4robot; print('okw4robot OK')
+          import okw_env; print('okw-env OK')
+          import robotframework_okw_remote_ssh; print('okw-remote-ssh OK')
+          import okw_env_docker; print('okw-env-docker OK')
+          "
+
   selenium-tests:
     runs-on: ubuntu-latest
     env:
