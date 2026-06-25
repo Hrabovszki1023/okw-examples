@@ -15,7 +15,7 @@ Option 1 Auswaehlen
 
     SetValue           Auswahlliste    Option 1
 
-    VerifyValue        Auswahlliste    1
+    VerifyValue        Auswahlliste    Option 1
 
 Option 2 Auswaehlen
     [Documentation]    Waehlt Option 2 aus der Dropdown-Liste und prueft den Wert.
@@ -24,7 +24,7 @@ Option 2 Auswaehlen
 
     SetValue           Auswahlliste    Option 2
 
-    VerifyValue        Auswahlliste    2
+    VerifyValue        Auswahlliste    Option 2
 
 Option Wechseln
     [Documentation]    Waehlt erst Option 1, dann Option 2 und prueft jeweils den Wert.
@@ -32,10 +32,10 @@ Option Wechseln
     SelectWindow       DropdownPage
 
     SetValue           Auswahlliste    Option 1
-    VerifyValue        Auswahlliste    1
+    VerifyValue        Auswahlliste    Option 1
 
     SetValue           Auswahlliste    Option 2
-    VerifyValue        Auswahlliste    2
+    VerifyValue        Auswahlliste    Option 2
 
 Ausgangszustand Pruefen
     [Documentation]    Prueft den Ausgangszustand der Dropdown-Liste.
