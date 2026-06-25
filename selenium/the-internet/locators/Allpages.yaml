@@ -1,3 +1,4 @@
 CheckboxesPage: !include CheckboxesPage.yaml
+DropdownPage: !include DropdownPage.yaml
 LoginPage: !include LoginPage.yaml
 SecurePage: !include SecurePage.yaml

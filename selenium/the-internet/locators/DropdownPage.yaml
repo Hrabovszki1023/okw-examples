@@ -1,0 +1,11 @@
+__self__:
+  class: okw_web_selenium.widgets.webse_label.WebSe_Label
+  locator: { css: 'div.example' }
+
+Seitentitel:
+  class: okw_web_selenium.widgets.webse_label.WebSe_Label
+  locator: { css: 'h3' }
+
+Auswahlliste:
+  class: okw_web_selenium.widgets.webse_combobox.WebSe_ComboBox
+  locator: { css: '#dropdown' }

@@ -107,4 +107,5 @@ jobs:
           cd selenium/the-internet
           robot --outputdir ../../results/the-internet \
             tests/Login.robot \
-            tests/Checkboxes.robot
+            tests/Checkboxes.robot \
+            tests/Dropdown.robot
