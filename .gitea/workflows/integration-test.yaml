@@ -52,5 +52,6 @@ jobs:
           cd selenium/expandtesting
           robot --outputdir ../../results/selenium \
             tests/DynamicTable.robot \
+            tests/Login.robot \
             tests/Hovers.robot \
             tests/ShouldBe.robot

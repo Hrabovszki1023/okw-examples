@@ -30,7 +30,7 @@ Fehlerhafter Benutzername
     ClickOn            Anmelden
 
     SelectWindow       LoginPage
-    VerifyValue        Fehlermeldung    Invalid username.
+    VerifyValueWCM     Fehlermeldung    *invalid*
 
 Fehlerhaftes Passwort
     [Documentation]    Prueft den Login mit korrektem Benutzer aber falschem Passwort.
@@ -41,7 +41,7 @@ Fehlerhaftes Passwort
     ClickOn            Anmelden
 
     SelectWindow       LoginPage
-    VerifyValue     Fehlermeldung    Invalid password.
+    VerifyValueWCM  Fehlermeldung    *invalid*
 
 *** Keywords ***
 Login Seite Oeffnen
