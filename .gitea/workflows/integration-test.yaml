@@ -101,9 +101,10 @@ jobs:
             robotframework-okw-web-selenium \
             robotframework-okw-env-docker
 
-      - name: Run the-internet Login tests (Docker + headless Chrome)
+      - name: Run the-internet tests (Docker + headless Chrome)
         run: |
           . venv/bin/activate
           cd selenium/the-internet
           robot --outputdir ../../results/the-internet \
-            tests/Login.robot
+            tests/Login.robot \
+            tests/Checkboxes.robot
