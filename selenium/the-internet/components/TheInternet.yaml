@@ -1,0 +1,7 @@
+TheInternet:
+  provider: docker
+  image: gprestes/the-internet
+  version: latest
+  port: 5000
+  healthcheck: "curl -f http://localhost:5000/ || exit 1"
+  timeout: 60s

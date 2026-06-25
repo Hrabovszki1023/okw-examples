@@ -83,3 +83,28 @@ jobs:
             tests/Login.robot \
             tests/Hovers.robot \
             tests/ShouldBe.robot
+
+  the-internet-tests:
+    runs-on: ubuntu-latest
+    env:
+      OKW_BROWSER_HEADLESS: "true"
+      DOCKER_HOST: tcp://okw-docker-host:2375
+      OKW_DOCKER_HOSTNAME: okw-docker-host
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install packages from TestPyPI
+        run: |
+          python3 -m venv venv
+          . venv/bin/activate
+          pip install --index-url https://test.pypi.org/simple/ \
+            --extra-index-url https://pypi.org/simple/ \
+            robotframework-okw-web-selenium \
+            robotframework-okw-env-docker
+
+      - name: Run the-internet Login tests (Docker + headless Chrome)
+        run: |
+          . venv/bin/activate
+          cd selenium/the-internet
+          robot --outputdir ../../results/the-internet \
+            tests/Login.robot

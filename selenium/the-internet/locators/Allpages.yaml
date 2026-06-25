@@ -1,0 +1,2 @@
+LoginPage: !include LoginPage.yaml
+SecurePage: !include SecurePage.yaml

@@ -1,0 +1,19 @@
+__self__:
+  class: okw_web_selenium.widgets.webse_label.WebSe_Label
+  locator: { css: 'div.example' }
+
+Seitentitel:
+  class: okw_web_selenium.widgets.webse_label.WebSe_Label
+  locator: { css: 'h2' }
+
+Willkommensmeldung:
+  class: okw_web_selenium.widgets.webse_label.WebSe_Label
+  locator: { css: '#flash' }
+
+Hinweistext:
+  class: okw_web_selenium.widgets.webse_label.WebSe_Label
+  locator: { css: 'h4.subheader' }
+
+Abmelden:
+  class: okw_web_selenium.widgets.webse_link.WebSe_Link
+  locator: { css: 'a[href="/logout"]' }
