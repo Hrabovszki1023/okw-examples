@@ -109,4 +109,5 @@ jobs:
             tests/Login.robot \
             tests/Checkboxes.robot \
             tests/Dropdown.robot \
-            tests/Hovers.robot
+            tests/Hovers.robot \
+            tests/Tables.robot
