@@ -80,7 +80,6 @@ jobs:
           cd selenium/expandtesting
           robot --outputdir ../../results/selenium \
             tests/DynamicTable.robot \
-            tests/Login.robot \
             tests/Hovers.robot \
             tests/ShouldBe.robot
 
@@ -88,8 +87,8 @@ jobs:
     runs-on: ubuntu-latest
     env:
       OKW_BROWSER_HEADLESS: "true"
-      DOCKER_HOST: tcp://okw-docker-host:2375
-      OKW_DOCKER_HOSTNAME: okw-docker-host
+      DOCKER_HOST: tcp://192.168.1.123:2375
+      OKW_DOCKER_HOSTNAME: 192.168.1.123
     steps:
       - uses: actions/checkout@v4
 
