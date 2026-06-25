@@ -1,0 +1,31 @@
+__self__:
+  class: okw_web_selenium.widgets.webse_label.WebSe_Label
+  locator: { css: 'div.example' }
+
+Seitentitel:
+  class: okw_web_selenium.widgets.webse_label.WebSe_Label
+  locator: { css: 'h3' }
+
+Avatar1:
+  class: okw_web_selenium.widgets.webse_base.WebSe_Base
+  locator: { xpath: '//div[@class="figure"][1]/img' }
+
+Benutzerinfo1:
+  class: okw_web_selenium.widgets.webse_label.WebSe_Label
+  locator: { xpath: '//div[@class="figure"][1]//h5' }
+
+Avatar2:
+  class: okw_web_selenium.widgets.webse_base.WebSe_Base
+  locator: { xpath: '//div[@class="figure"][2]/img' }
+
+Benutzerinfo2:
+  class: okw_web_selenium.widgets.webse_label.WebSe_Label
+  locator: { xpath: '//div[@class="figure"][2]//h5' }
+
+Avatar3:
+  class: okw_web_selenium.widgets.webse_base.WebSe_Base
+  locator: { xpath: '//div[@class="figure"][3]/img' }
+
+Benutzerinfo3:
+  class: okw_web_selenium.widgets.webse_label.WebSe_Label
+  locator: { xpath: '//div[@class="figure"][3]//h5' }

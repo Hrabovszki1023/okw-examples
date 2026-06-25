@@ -108,4 +108,5 @@ jobs:
           robot --outputdir ../../results/the-internet \
             tests/Login.robot \
             tests/Checkboxes.robot \
-            tests/Dropdown.robot
+            tests/Dropdown.robot \
+            tests/Hovers.robot
