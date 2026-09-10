@@ -46,7 +46,8 @@ jobs:
             robotframework-okw4robot \
             robotframework-okw-env \
             robotframework-okw-remote-ssh \
-            robotframework-okw-env-docker
+            robotframework-okw-env-docker \
+            robotframework-okw-kafka
 
       - name: Verify imports
         run: |
@@ -57,6 +58,7 @@ jobs:
           import okw_env; print('okw-env OK')
           import robotframework_okw_remote_ssh; print('okw-remote-ssh OK')
           import okw_env_docker; print('okw-env-docker OK')
+          import okw_kafka; print('okw-kafka OK')
           "
 
   selenium-tests:
@@ -111,3 +113,25 @@ jobs:
             tests/Dropdown.robot \
             tests/Hovers.robot \
             tests/Tables.robot
+
+  kafka-tests:
+    runs-on: ubuntu-latest
+    env:
+      DOCKER_HOST: tcp://192.168.1.123:2375
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install packages from TestPyPI
+        run: |
+          python3 -m venv venv
+          . venv/bin/activate
+          pip install --index-url https://test.pypi.org/simple/ \
+            --extra-index-url https://pypi.org/simple/ \
+            robotframework-okw-kafka \
+            robotframework-okw-env-docker
+
+      - name: Run Kafka roundtrip tests (real broker on Docker)
+        run: |
+          . venv/bin/activate
+          cd kafka
+          robot --outputdir ../results/kafka tests/Kafka_Roundtrip.robot
