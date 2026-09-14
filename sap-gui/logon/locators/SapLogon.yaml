@@ -30,6 +30,10 @@ SapLogon:
       class: okw_sap_gui.widgets.sapgui_button.SapGui_Button
       locator: { id: "wnd[0]/tbar[0]/btn[0]" }
 
+    Transaktionscode:
+      class: okw_sap_gui.widgets.sapgui_tcode.SapGui_TCode
+      locator: { virtual: true }
+
     Statusleiste:
       class: okw_sap_gui.widgets.sapgui_statusbar.SapGui_StatusBar
       locator: { id: "wnd[0]/sbar" }
