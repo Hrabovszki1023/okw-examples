@@ -1,0 +1,35 @@
+# SapLogon.yaml -- SAP Logon Screen (Transaktion 000)
+#
+# Voraussetzungen:
+#   - SAP GUI for Windows muss laufen
+#   - SAP GUI Scripting muss aktiviert sein (RZ11)
+#   - Eine Verbindung muss offen sein
+
+SapLogon:
+  __self__:
+    class: okw_sap_gui.adapters.sap_gui_adapter.SapGuiAdapter
+
+  Logon:
+    Mandant:
+      class: okw_sap_gui.widgets.sapgui_textfield.SapGui_TextField
+      locator: { id: "wnd[0]/usr/txtRSYST-MESSION" }
+
+    Benutzer:
+      class: okw_sap_gui.widgets.sapgui_textfield.SapGui_TextField
+      locator: { hlabel: "Benutzer" }
+
+    Kennwort:
+      class: okw_sap_gui.widgets.sapgui_textfield.SapGui_TextField
+      locator: { id: "wnd[0]/usr/pwdRSYST-BCODE" }
+
+    Sprache:
+      class: okw_sap_gui.widgets.sapgui_combobox.SapGui_ComboBox
+      locator: { id: "wnd[0]/usr/txtRSYST-LANGU" }
+
+    Anmelden:
+      class: okw_sap_gui.widgets.sapgui_button.SapGui_Button
+      locator: { id: "wnd[0]/tbar[0]/btn[0]" }
+
+    Statusleiste:
+      class: okw_sap_gui.widgets.sapgui_statusbar.SapGui_StatusBar
+      locator: { id: "wnd[0]/sbar" }
