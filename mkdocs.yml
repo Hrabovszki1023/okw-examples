@@ -1,0 +1,65 @@
+site_name: OKW4Robot Handbuch
+site_description: Benutzerhandbuch für das OKW4Robot Keyword-Framework
+site_url: https://hrabovszki1023.github.io/okw-examples/
+repo_url: https://github.com/Hrabovszki1023/okw-examples
+repo_name: okw-examples
+
+theme:
+  name: material
+  language: de
+  palette:
+    - scheme: default
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-7
+        name: Dunkles Design
+    - scheme: slate
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-4
+        name: Helles Design
+  features:
+    - navigation.sections
+    - navigation.expand
+    - navigation.top
+    - toc.integrate
+    - content.code.copy
+
+markdown_extensions:
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.inlinehilite
+  - attr_list
+  - tables
+
+nav:
+  - Startseite: index.md
+  - Grundlagen:
+    - Signal vs. NOISE: grundlagen/signal-vs-noise.md
+    - Warum kein Page Object Model?: grundlagen/warum-kein-pom.md
+    - Keywords: grundlagen/keywords.md
+    - YAML-Locator: grundlagen/yaml-locator.md
+    - Tokens und Match Modes: grundlagen/tokens-und-match-modes.md
+    - SetContext: grundlagen/setcontext.md
+  - GUI-Bibliotheken:
+    - Web Selenium: gui/web-selenium.md
+    - Java RemoteSwing: gui/java-remoteswing.md
+    - SAP GUI: gui/sap-gui.md
+  - Umgebungs-Bibliotheken:
+    - Docker: umgebungen/docker.md
+    - Proxmox: umgebungen/proxmox.md
+  - Spezial-Bibliotheken:
+    - REST API: spezial/rest-api.md
+    - SSH: spezial/ssh.md
+    - Kafka: spezial/kafka.md
+  - Zusammenspiel:
+    - Bibliotheken kombinieren: zusammenspiel/kombinieren.md
+    - End-to-End-Beispiel: zusammenspiel/end-to-end.md
+    - CI/CD-Pipeline: zusammenspiel/ci-cd.md

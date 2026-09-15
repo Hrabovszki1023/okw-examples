@@ -10,5 +10,8 @@ output.xml
 /log.html
 /report.html
 
+# MkDocs build output
+site/
+
 # results/ directories contain committed reports for GitHub Pages
 # Do NOT ignore results/log.html and results/report.html
