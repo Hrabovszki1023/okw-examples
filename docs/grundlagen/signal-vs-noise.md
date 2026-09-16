@@ -76,6 +76,38 @@ Widget (.py)      →  Interaktion: WIE wird bedient
 Adapter (.py)     →  Technologie: WELCHER Treiber
 ```
 
+## Die Trinität: Test — YAML — Widget
+
+OKW trennt Fachlichkeit und Technik durch drei Schichten:
+
+```
+┌─────────────────────────┐
+│  Test (.robot)           │  Fachsprache — "SetValue Name admin"
+│  Nur Signal              │  Kein Locator, kein Treiber, kein Wait
+├─────────────────────────┤
+│  YAML Locator (.yaml)    │  Mapping — "Name → { name: txtName }"
+│  Entkopplungsschicht     │  Verbindet Fachbegriff mit technischer ID
+├─────────────────────────┤
+│  Widget + Adapter (.py)  │  Technik — "txtName → clear + send_keys"
+│  Nur NOISE               │  Treiber, Waits, Element-Interaktion
+└─────────────────────────┘
+```
+
+**Warum ist das wichtig?**
+
+- Der **Test** spricht die Sprache des Fachtesters: `SetValue Name admin`.
+  Kein `txtName`, kein `By.ID`, kein `send_keys`.
+- Die **YAML-Datei** ist die Entkopplungsschicht. Sie übersetzt den
+  Fachbegriff `Name` in die technische ID `txtName`. Wenn sich die GUI
+  ändert (TextField → MultilineField), ändert sich nur die YAML-Datei —
+  der Test bleibt unverändert.
+- **Widget + Adapter** kapseln die technische Umsetzung. Ob Selenium,
+  Swing oder SAP GUI dahinter steckt, ist für den Test unsichtbar.
+
+Diese Trennung macht OKW-Tests **technologieneutral**: Derselbe Test
+(`SetValue Name admin`) funktioniert mit Web, Java Swing und SAP GUI —
+nur die YAML-Datei und der Adapter sind unterschiedlich.
+
 ## Das Prinzip
 
 Jede Designentscheidung in OKW lässt sich auf eine Frage zurückführen:
