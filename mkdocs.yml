@@ -45,6 +45,7 @@ nav:
     - Signal vs. NOISE: grundlagen/signal-vs-noise.md
     - Warum kein Page Object Model?: grundlagen/warum-kein-pom.md
     - Keywords: grundlagen/keywords.md
+    - GUI-Objekte: grundlagen/gui-objekte.md
     - YAML-Locator: grundlagen/yaml-locator.md
     - Tokens und Match Modes: grundlagen/tokens-und-match-modes.md
     - SetContext: grundlagen/setcontext.md
