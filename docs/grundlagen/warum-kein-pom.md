@@ -28,6 +28,8 @@ Das ist besser als Locators direkt im Test. Aber es hat Grenzen.
 
 ## Drei Probleme mit POM
 
+→ Warum OKW diese Probleme anders löst: [Warum diese Trennung?](yaml-locator.md#warum-diese-trennung)
+
 ### 1. Seiten-Ebene statt Komponenten-Ebene
 
 POM arbeitet auf **Seiten-Ebene**: Jede Seite bekommt eine eigene Klasse mit

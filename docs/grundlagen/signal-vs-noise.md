@@ -46,12 +46,15 @@ ist in Selenium-Aufrufen, Locators und Waits vergraben.
 *** Test Cases ***
 Login mit gueltigem Benutzer
     OKW.StartApp       MeinAppChrome
+
     OKW.SelectWindow   Login
     OKW.SetValue       Benutzername    standard_user
     OKW.SetValue       Kennwort        secret_sauce
     OKW.ClickOn        Anmelden
+
     OKW.SelectWindow   Products
     OKW.VerifyExists   Produktliste    YES
+
     OKW.StopApp
 ```
 

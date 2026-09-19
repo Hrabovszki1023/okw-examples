@@ -34,9 +34,11 @@ Library    okw_web_selenium.library.OkwWebSeleniumLibrary    WITH NAME    OKW
 *** Test Cases ***
 Google Suche
     OKW.StartApp       MeinAppChrome
+
     OKW.SelectWindow   Suchseite
     OKW.SetValue       Suchfeld       Robot Framework
     OKW.ClickOn        Suchen
+
     OKW.StopApp
 ```
 
