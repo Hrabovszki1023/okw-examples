@@ -7,7 +7,14 @@ Testcode enthält zwei Arten von Information:
 - **Signal** — Die eigentliche Testlogik: Was wird getestet? Was ist das erwartete Ergebnis?
 - **NOISE** — Technisches Rauschen: Wie findet man das Element? Welcher Treiber wird benutzt? Welche API wird aufgerufen?
 
-Je mehr NOISE im Test steht, desto schwerer ist er zu lesen, zu warten und zu verstehen.
+Solange alle Tests grün sind, ist alles gut — Signal ergibt PASS, und
+die technischen Details fallen nicht auf. NOISE wird erst dann zum
+Problem, wenn ein Testfall **fehlschlägt**: Ein Element wird nicht
+gefunden, ein Timeout läuft ab, ein Treiber startet nicht. Dann muss
+man den technischen Ballast durcharbeiten, um die eigentliche Ursache
+zu finden. Je mehr NOISE im Test steht, desto länger dauert die
+Fehleranalyse — und desto schwerer ist der Test zu lesen, zu warten
+und zu verstehen.
 
 ## Beispiel: Login-Test
 
@@ -37,8 +44,35 @@ assert "inventory" in driver.current_url
 driver.quit()
 ```
 
-14 Zeilen. Die Testlogik (Benutzer eingeben, Kennwort eingeben, anmelden, prüfen)
-ist in Selenium-Aufrufen, Locators und Waits vergraben.
+14 Zeilen. Die Testlogik (Benutzer eingeben, Kennwort eingeben, anmelden,
+prüfen) ist in Selenium-Aufrufen, Locators und Waits vergraben.
+
+**Was ist hier NOISE?**
+
+1. **Technische und fachliche Befehle vermischt** — Imports, Treiber-Setup
+   (`webdriver.Chrome()`) und fachliche Aktionen (Benutzer eingeben) stehen
+   im selben Code. Den Testfall interessiert nicht, welcher Treiber
+   verwendet wird — das beeinträchtigt Lesbarkeit und Reviewfähigkeit.
+
+2. **Wiederholte Interaktionsmuster** — `clear()` vor jedem `send_keys()`
+   ist ein technisches Detail der Textfeld-Bedienung. Bei einer Änderung
+   des GUI-Verhaltens (z.B. kein `clear()` mehr nötig) müssen alle
+   Stellen angepasst werden.
+
+3. **Locatoren im Code eingebettet** — `By.ID, "user-name"` steht direkt
+   im Test. Wird dasselbe Element an zehn Stellen verwendet, steht der
+   Locator zehnmal im Code — eine Änderung betrifft alle Stellen.
+
+4. **Wait-Logik im Test** — `WebDriverWait` und `expected_conditions`
+   sind reine Infrastruktur. Ob und wie lange gewartet wird, ist kein
+   fachliches Anliegen des Tests.
+
+5. **Prüfung auf technischer Ebene** — `assert "inventory" in driver.current_url`
+   prüft eine URL statt eines fachlichen Zustands. Was fachlich gemeint
+   ist: „Die Produktseite ist sichtbar."
+
+6. **Aufräumen ist Testverantwortung** — `driver.quit()` muss manuell
+   aufgerufen werden. Vergisst man es, bleibt der Browser offen.
 
 ### Mit OKW (Signal dominiert)
 
@@ -115,12 +149,20 @@ nur die YAML-Datei und der Adapter sind unterschiedlich.
 
 Jede Designentscheidung in OKW lässt sich auf eine Frage zurückführen:
 
-> **Ist das Signal oder NOISE?**
+> **Ist das eine potenzielle NOISE-Quelle?**
 
-- Locators im Test? → NOISE → Raus in YAML
-- Selenium-Imports im Test? → NOISE → Raus in den Adapter
-- Waits im Test? → NOISE → Raus ins Widget
+Solange alles fehlerfrei läuft, fällt NOISE nicht auf. Aber sobald ein
+Fehler auftritt, stellt sich die entscheidende Frage: **An wie vielen
+Stellen muss eingegriffen werden, um die Ursache abzustellen?**
+
+OKW eliminiert potenzielle NOISE-Quellen, indem es jede Verantwortung
+an genau eine Stelle verschiebt:
+
+- Locators im Test? → Potenzielle NOISE-Quelle → Raus in YAML (eine Stelle)
+- Selenium-Imports im Test? → Potenzielle NOISE-Quelle → Raus in den Adapter (eine Stelle)
+- Waits im Test? → Potenzielle NOISE-Quelle → Raus ins Widget (eine Stelle)
 - `$IGNORE` für irrelevante Schritte? → Entfernt NOISE aus dem Testablauf
 - CamelCase-Keywords? → Maximales Signal pro Zeile
 
-Wenn ein Testschritt nicht sofort verständlich ist, enthält er zu viel NOISE.
+Wenn ein Testschritt nicht sofort verständlich ist, enthält er zu viel
+potenzielle NOISE-Quellen.
