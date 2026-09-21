@@ -2,19 +2,23 @@
 
 ## Das Problem
 
-Testcode enthält zwei Arten von Information:
+Wenn ein Testfall fehlschlägt, gibt es zwei mögliche Ursachen:
 
-- **Signal** — Die eigentliche Testlogik: Was wird getestet? Was ist das erwartete Ergebnis?
-- **NOISE** — Technisches Rauschen: Wie findet man das Element? Welcher Treiber wird benutzt? Welche API wird aufgerufen?
+- **Signal** — Der Test hat einen echten Fehler im **System Under Test
+  (SUT)** gefunden. Das ist das Ziel der Testautomatisierung.
+- **NOISE** — Der Fehler liegt **nicht** im SUT, sondern im Skript,
+  in der Umgebung, im Locator, im Treiber, im Timeout. Es ist ein
+  Fehler, der analysiert werden muss, aber keinen SUT-Fehler aufdeckt.
 
-Solange alle Tests grün sind, ist alles gut — Signal ergibt PASS, und
-die technischen Details fallen nicht auf. NOISE wird erst dann zum
-Problem, wenn ein Testfall **fehlschlägt**: Ein Element wird nicht
-gefunden, ein Timeout läuft ab, ein Treiber startet nicht. Dann muss
-man den technischen Ballast durcharbeiten, um die eigentliche Ursache
-zu finden. Je mehr NOISE im Test steht, desto länger dauert die
-Fehleranalyse — und desto schwerer ist der Test zu lesen, zu warten
-und zu verstehen.
+Solange alle Tests grün sind, fällt NOISE nicht auf. Aber sobald ein
+Testfall fehlschlägt, beginnt die Analyse: Ist das ein echter
+SUT-Fehler (Signal) oder ein technisches Problem (NOISE)?
+
+Je mehr potenzielle NOISE-Quellen im Testcode stecken — eingebettete
+Locatoren, Treiber-Setup, Wait-Logik, technische Assertions — desto
+öfter schlagen Tests fehl, ohne einen SUT-Fehler zu finden. Und desto
+länger dauert die Analyse, um echte Fehler von technischem Rauschen
+zu unterscheiden.
 
 ## Beispiel: Login-Test
 
@@ -47,7 +51,7 @@ driver.quit()
 14 Zeilen. Die Testlogik (Benutzer eingeben, Kennwort eingeben, anmelden,
 prüfen) ist in Selenium-Aufrufen, Locators und Waits vergraben.
 
-**Was ist hier NOISE?**
+**Was sind potenzielle NOISE-Quellen?**
 
 1. **Technische und fachliche Befehle vermischt** — Imports, Treiber-Setup
    (`webdriver.Chrome()`) und fachliche Aktionen (Benutzer eingeben) stehen
