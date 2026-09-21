@@ -17,17 +17,32 @@ die Technologie dahinter ist austauschbar.
 | `SelectWindow` | WindowName | Fenster/Dialog auswählen |
 | `SetContext` | ContextName, Wert | Kontext für wiederholende Strukturen setzen |
 
-### Schreib-Keywords (GUI-Zustand ändern)
+### Eingabe-Keywords (GUI-Zustand ändern)
+
+#### Ohne Wert (Aktion auf Widget)
+
+| Keyword | Parameter | Zweck |
+|---|---|---|
+| `ClickOn` | Widget | Widget anklicken |
+| `DoubleClickOn` | Widget | Widget doppelklicken |
+| `MoveOver` | Widget | Maus über Widget bewegen (Hover) |
+| `Delete` | Widget | Feldinhalt löschen |
+| `SelectMenu` | Widget | Menüeintrag anklicken (Toggle) |
+
+#### Mit Wert (Einzelwert-Eingabe)
 
 | Keyword | Parameter | Zweck |
 |---|---|---|
 | `SetValue` | Widget, Wert | Wert setzen (Text eingeben, Checkbox setzen) |
-| `ClickOn` | Widget | Widget anklicken |
-| `DoubleClickOn` | Widget | Widget doppelklicken |
-| `Select` | Widget, Wert | Eintrag auswählen (ComboBox, Menü) |
-| `SelectMenu` | Widget, Wert | Menüeintrag auswählen |
 | `TypeKey` | Widget, Wert | Text eintippen (ohne vorheriges Löschen) |
-| `Delete` | Widget | Feldinhalt löschen |
+| `Select` | Widget, Wert | Einzelnen Eintrag auswählen (ComboBox, RadioButton) |
+| `SelectMenu` | Widget, Wert | Menüeintrag auf Zustand setzen (Checked/Unchecked) |
+
+#### Mehrfach-Auswahl (Listen)
+
+| Keyword | Parameter | Zweck |
+|---|---|---|
+| `Select` | Widget, Wert₁ / Wert₂ / ... | Mehrere Einträge auswählen (ListBox) |
 
 ### Lese-Keywords (GUI-Zustand prüfen)
 
@@ -40,6 +55,36 @@ die Technologie dahinter ist austauschbar.
 | `LogValue` | Widget | Aktuellen Wert ins Protokoll schreiben |
 | `LogCaption` | Widget | Sichtbaren Text ins Protokoll schreiben |
 | `MemorizeValue` | Widget, Schlüssel | Wert für späteren Zugriff speichern |
+
+### Tabellen-Keywords
+
+Tabellen haben eigene Keywords, die über Zeile/Spalte oder Spaltenüberschriften adressieren:
+
+#### Eingabe
+
+| Keyword | Parameter | Zweck |
+|---|---|---|
+| `ClickOnTableCell` | Tabelle, Zeile, Spalte | Zelle anklicken |
+| `ClickOnTableCellByHeaders` | Tabelle, Zeile, Spaltenname | Zelle anklicken (per Spaltenüberschrift) |
+| `DoubleClickOnTableCell` | Tabelle, Zeile, Spalte | Zelle doppelklicken |
+| `DoubleClickOnTableCellByHeaders` | Tabelle, Zeile, Spaltenname | Zelle doppelklicken (per Spaltenüberschrift) |
+| `SetTableCellValue` | Tabelle, Zeile, Spalte, Wert | Zellenwert setzen |
+| `SetTableCellValueByHeaders` | Tabelle, Zeile, Spaltenname, Wert | Zellenwert setzen (per Spaltenüberschrift) |
+
+#### Lesen und Prüfen
+
+| Keyword | Parameter | Zweck |
+|---|---|---|
+| `VerifyTableCellValue` | Tabelle, Zeile, Spalte, Erwartet | Zellenwert prüfen |
+| `VerifyTableCellValueByHeaders` | Tabelle, Zeile, Spaltenname, Erwartet | Zellenwert prüfen (per Spaltenüberschrift) |
+| `VerifyTableRowContent` | Tabelle, Zeile, Erwartet₁ / ... | Zeileninhalt prüfen |
+| `VerifyTableColumnContent` | Tabelle, Spalte, Erwartet₁ / ... | Spalteninhalt prüfen |
+| `VerifyTableContent` | Tabelle, Erwartet (Matrix) | Gesamte Tabelle prüfen |
+| `VerifyTableHasRow` | Tabelle, Erwartet₁ / ... | Prüfen ob Zeile existiert |
+| `VerifyTableRowCount` | Tabelle, Erwartet | Zeilenanzahl prüfen |
+| `VerifyTableColumnCount` | Tabelle, Erwartet | Spaltenanzahl prüfen |
+| `LogTableCellValue` | Tabelle, Zeile, Spalte | Zellenwert ins Protokoll |
+| `MemorizeTableCellValue` | Tabelle, Zeile, Spalte, Schlüssel | Zellenwert merken |
 
 ## CamelCase-Konvention
 

@@ -47,6 +47,7 @@ nav:
     - Keywords: grundlagen/keywords.md
     - GUI-Objekte: grundlagen/gui-objekte.md
     - YAML-Locator: grundlagen/yaml-locator.md
+    - Idempotenz: grundlagen/idempotenz.md
     - Tokens und Match Modes: grundlagen/tokens-und-match-modes.md
     - SetContext: grundlagen/setcontext.md
   - GUI-Bibliotheken:
