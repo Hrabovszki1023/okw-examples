@@ -1,5 +1,5 @@
 ---
-source_hash: fe69e60170c9
+source_hash: 1d3ba7609021
 ---
 
 # Idempotency
@@ -38,6 +38,18 @@ SetValue    Benutzername    admin    # Result: still "admin"
 
 The field is **not** written twice — the state after the call is always
 the same.
+
+**Counter-example — `TypeKey` appends:**
+
+```robot
+TypeKey        Benutzername    admin
+VerifyValue    Benutzername    admin
+TypeKey        Benutzername    admin
+VerifyValue    Benutzername    adminadmin    # Result: "adminadmin"
+```
+
+`TypeKey` types the text in addition, without clearing the field first.
+Every further call changes the state — `TypeKey` is **not** idempotent.
 
 ### SelectMenu — Set a State Idempotently
 
@@ -96,9 +108,14 @@ target object:
 | Keyword | GUI object | Idempotent? | Why |
 |---|---|---|---|
 | `ClickOn` | Menu item | **Yes** | Always opens the same function |
-| `ClickOn` | "Save" button | **Yes** | Always triggers the same action |
-| `ClickOn` | Checkbox | **No** | Toggle: ON → OFF → ON → ... |
+| `ClickOn` | "Save" button | **Depends** | Depending on the application: a second record, a "no changes" message, or the same action |
+| `ClickOn` | "OK" / "Cancel" button in a dialog | **No** | The dialog closes — a second click no longer finds the object |
+| `ClickOn` | Checkbox | **No** | Toggle: ON → OFF → ON → ... — `SetValue AGB Checked`, on the other hand, is idempotent; prefer it in navigation |
 | `ClickOn` | Accordion panel | **No** | Toggle: open → closed → open → ... |
+
+**Rule of thumb:** A keyword is not idempotent if it changes the
+application state so that the same call afterwards behaves differently —
+or no longer finds the GUI object at all ("object not found").
 
 !!! warning "Think carefully in the test case"
     When creating a test, check **every step**: is this keyword
@@ -120,47 +137,68 @@ GUI object:
 | `TypeKey` | Appends text instead of replacing it |
 | `DoubleClickOn` | A double-click opens e.g. an editor — repeating it may close it |
 
-## The Test State Must Be Idempotent
+## Idempotency in the 5-Phase Model
 
 The decisive rule applies not to individual keywords, but to the
-**entire navigation to the test state**:
+**way into the test state**:
 
-> All steps from start to verification must be **idempotent in sum**.
+> Pay attention to idempotency when the **initial state** of an object
+> **could be unknown** and you want to make sure that you **leave it
+> in a defined state** afterwards.
 
-A test case typically has three phases:
+An OKW test case has five phases:
 
-```
-1. Navigation    →  Reach the right window/dialog
-2. Action        →  Trigger the test (input, click, ...)
-3. Verification  →  Verify the result
-```
+| # | Phase | Content | Idempotent? |
+|---|---|---|---|
+| 1 | Initialise environment / reset | Reset the state, e.g. delete data from an earlier run | **Must** |
+| 2 | Load test data | Create the required data | **Must** |
+| 3 | Navigate to test state | Reach the right window/dialog | **Must** |
+| 4 | Perform action | Enter values and trigger processing | May be non-idempotent |
+| 5 | Verify acceptance criterion | Verify the result | Always — `Verify*` only reads |
 
-Phases 1 + 2 + 3 together must be idempotent — the test must reach the
-same state and verify the same result on every run, however often it
-runs.
+Phases 1–3 bring the application from **any** initial state safely into
+the test state — that is why they must be idempotent. This way the test
+reaches the same state and verifies the same result on every run,
+however often it runs.
+
+!!! info "Failures outside phases 4 and 5 are usually NOISE"
+    If a failure occurs **outside phase 4 or 5**, it is most likely
+    **NOISE** — the actual test was never reached. That is why the steps
+    of phases 1–3 are wrapped with
+    [`OnFailNOISE`](../gui/web-selenium/index.md#onfailnoise): a failure
+    there marks the test case as NOISE, not as an SUT defect. The
+    5-phase model thus enables a quick first classification of test
+    results.
 
 **Example — idempotent test state:**
 
 ```robot
 *** Test Cases ***
 Login mit gültigem Benutzer
+    # Phase 3: navigation (idempotent)
     OKW.StartApp        MeineApp
     OKW.SelectWindow    Login
 
-    # Navigation + action (idempotent in sum)
+    # Phase 4: perform action
     OKW.SetValue        Benutzer    admin       # idempotent
     OKW.SetValue        Kennwort    geheim      # idempotent
-    OKW.ClickOn         Anmelden                # idempotent (button)
+    OKW.ClickOn         Anmelden                # not idempotent: login page disappears
 
-    # Verification (always idempotent)
+    # Phase 5: verify acceptance criterion (always idempotent)
     OKW.SelectWindow    Dashboard
     OKW.VerifyValue     Willkommen    Hallo admin
 
     OKW.StopApp
 ```
 
-Every single step sets a defined state — nothing depends on what was in
-the field before or whether the test has run before.
+The inputs set a defined state — nothing depends on what was in the
+field before or whether the test has run before. `ClickOn Anmelden`
+(log in) is **not** idempotent on its own: after the click the login page
+has disappeared, and a second click would no longer find the button.
+That is fine — the click belongs to the action (phase 4), runs exactly
+once per run, and
+`SelectWindow Dashboard` confirms the new state. **In sum** the test case
+is idempotent: it starts in the same state every time via `StartApp`.
 
 ## Signal vs. NOISE
 
@@ -168,16 +206,16 @@ Non-idempotent keywords are important — they trigger the actual test. A
 `ClickOn Speichern` (save) or `DoubleClickOn Datensatz` (record) is the
 **test action** itself. That is **Signal**.
 
-But in the **navigation to the test state**, non-idempotent steps are a
-potential **NOISE generator**: if the navigation depends on state, the
-test can fail on repetition — not because the test is wrong, but because
-the navigation is fragile.
+But in the phases **initialise, test data and navigation**, non-idempotent
+steps are a potential **NOISE generator**: if they depend on the initial
+state, the test can fail on repetition — not because the test is wrong,
+but because the way into the test state is fragile.
 
 | Phase | Idempotent? | Why |
 |---|---|---|
-| Navigation | **Must** be idempotent | Otherwise NOISE: test failures caused by fragile navigation |
-| Test action | May be non-idempotent | That **is** the test — Signal |
-| Verification | Always idempotent | `Verify*` only reads, changes nothing |
+| 1–3: initialise, test data, navigation | **Must** be idempotent | Otherwise NOISE: test failures caused by a fragile way into the test state |
+| 4: perform action | May be non-idempotent | That **is** the test — Signal |
+| 5: verify acceptance criterion | Always idempotent | `Verify*` only reads, changes nothing |
 
 **Example — NOISE caused by non-idempotent navigation:**
 
@@ -199,6 +237,24 @@ VerifyValue     Status    Gespeichert   # Stable
 
 The rule:
 
-> **Navigation** → use idempotent keywords (Signal).
-> **Test action** → the right keyword for the action (may be non-idempotent).
-> **Verification** → `Verify*` (always idempotent).
+> **Phases 1–3** (initialise, test data, navigation) → use idempotent keywords.
+> **Phase 4** (perform action) → the right keyword for the action (may be non-idempotent).
+> **Phase 5** (verify acceptance criterion) → `Verify*` (always idempotent).
+
+!!! tip "Guideline for creating tests"
+    1. **Reach the test state safely and simply** — choose the steps of
+       phases 1–3 so that they work **whatever state existed before**.
+    2. **In the test state** (phase 4), non-idempotent inputs are legitimate when
+       they deliberately stimulate a function — e.g. keyboard control:
+
+        ```robot
+        TypeKey         Suchfeld          Rob     # Typing triggers the suggestion list
+        VerifyExists    Vorschlagsliste   YES
+        ```
+
+        Every non-idempotent step is followed **immediately by a
+        verification**: the system's reaction is checked against the
+        expected result. That verification step is the actual Signal.
+
+    3. Whether a non-idempotent step makes sense must be decided **case
+       by case**. What matters first is knowing the differences.

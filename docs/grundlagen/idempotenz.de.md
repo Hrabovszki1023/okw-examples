@@ -37,6 +37,19 @@ SetValue    Benutzername    admin    # Ergebnis: immer noch "admin"
 Das Feld wird **nicht** doppelt beschrieben — der Zustand nach dem
 Aufruf ist immer derselbe.
 
+**Gegenbeispiel — `TypeKey` hängt an:**
+
+```robot
+TypeKey        Benutzername    admin
+VerifyValue    Benutzername    admin
+TypeKey        Benutzername    admin
+VerifyValue    Benutzername    adminadmin    # Ergebnis: "adminadmin"
+```
+
+`TypeKey` tippt den Text zusätzlich ein, ohne das Feld vorher zu leeren.
+Jeder weitere Aufruf verändert den Zustand — `TypeKey` ist **nicht**
+idempotent.
+
 ### SelectMenu — Zustand idempotent setzen
 
 Ohne Wert ist `SelectMenu` ein **Toggle** (nicht idempotent):
@@ -95,9 +108,14 @@ oder nicht idempotent sein:
 | Keyword | GUI-Objekt | Idempotent? | Warum |
 |---|---|---|---|
 | `ClickOn` | Menüeintrag | **Ja** | Öffnet immer dieselbe Funktion |
-| `ClickOn` | Button „Speichern" | **Ja** | Löst immer dieselbe Aktion aus |
-| `ClickOn` | Checkbox | **Nein** | Toggle: AN → AUS → AN → ... |
+| `ClickOn` | Button „Speichern" | **Bedingt** | Je nach Anwendung: zweiter Datensatz, Meldung „keine Änderungen“ oder dieselbe Aktion |
+| `ClickOn` | Button „OK“ / „Abbrechen“ im Dialog | **Nein** | Der Dialog schließt sich — ein zweiter Klick findet das Objekt nicht mehr |
+| `ClickOn` | Checkbox | **Nein** | Toggle: AN → AUS → AN → ... — idempotent ist dagegen `SetValue AGB Checked`; in der Navigation bevorzugen |
 | `ClickOn` | Akkordeon-Panel | **Nein** | Toggle: Auf → Zu → Auf → ... |
+
+**Merksatz:** Ein Keyword ist nicht idempotent, wenn es den Zustand
+der Anwendung so ändert, dass derselbe Aufruf danach anders ausgeht —
+oder das GUI-Objekt gar nicht mehr findet („Objekt nicht vorhanden“).
 
 !!! warning "Im Testfall genau überlegen"
     Bei der Testerstellung muss man für **jeden Schritt** prüfen:
@@ -119,49 +137,69 @@ vom GUI-Objekt:
 | `TypeKey` | Hängt Text an, statt zu ersetzen |
 | `DoubleClickOn` | Doppelklick öffnet z. B. einen Editor — Wiederholung kann schließen |
 
-## Der Testzustand muss idempotent sein
+## Idempotenz im 5-Phasen-Modell
 
 Die entscheidende Regel gilt nicht für einzelne Keywords, sondern
-für die **gesamte Navigation zum Testzustand**:
+für den **Weg in den Testzustand**:
 
-> Alle Schritte vom Start bis zur Prüfung müssen **in Summe
-> idempotent** sein.
+> Auf Idempotenz achtet man, wenn der **Ausgangszustand** eines
+> Objekts **unbekannt** sein könnte und man sicherstellen will, dass
+> man es anschließend **garantiert in einem bestimmten Zustand
+> verlässt**.
 
-Ein Testfall hat typisch drei Phasen:
+Ein OKW-Testfall hat fünf Phasen:
 
-```
-1. Navigation    →  Zum richtigen Fenster/Dialog gelangen
-2. Aktion        →  Den Test auslösen (Eingabe, Klick, ...)
-3. Prüfung       →  Ergebnis verifizieren
-```
+| # | Phase | Inhalt | Idempotent? |
+|---|---|---|---|
+| 1 | Umgebung initialisieren / Reset | Zustand zurücksetzen, z. B. Daten eines früheren Laufs löschen | **Muss** |
+| 2 | Testdaten einspielen | Benötigte Daten anlegen | **Muss** |
+| 3 | Navigation in Testzustand | Zum richtigen Fenster/Dialog gelangen | **Muss** |
+| 4 | Aktion ausführen | Werte eingeben und Verarbeitung auslösen | Darf nicht-idempotent sein |
+| 5 | Akzeptanzkriterium prüfen | Ergebnis verifizieren | Immer — `Verify*` liest nur |
 
-Die Phasen 1 + 2 + 3 zusammen müssen idempotent sein — der Test
-muss bei jedem Durchlauf denselben Zustand erreichen und dasselbe
-Ergebnis prüfen, egal wie oft er läuft.
+Die Phasen 1–3 bringen die Anwendung aus einem **beliebigen**
+Ausgangszustand sicher in den Testzustand — deshalb müssen sie
+idempotent sein. So erreicht der Test bei jedem Durchlauf denselben
+Zustand und prüft dasselbe Ergebnis, egal wie oft er läuft.
+
+!!! info "Fehler außerhalb von Phase 4 und 5 sind meist NOISE"
+    Tritt ein Fehler **außerhalb von Phase 4 oder 5** auf, handelt es
+    sich mit hoher Wahrscheinlichkeit um **NOISE** — der eigentliche
+    Test wurde gar nicht erreicht. Deshalb werden die Schritte der
+    Phasen 1–3 mit [`OnFailNOISE`](../gui/web-selenium/index.md#onfailnoise)
+    abgesichert: Ein Fehler dort markiert den Testfall als NOISE, nicht
+    als SUT-Fehler. Das 5-Phasen-Modell ermöglicht so eine schnelle
+    Erstklassifikation von Testergebnissen.
 
 **Beispiel — idempotenter Testzustand:**
 
 ```robot
 *** Test Cases ***
 Login mit gültigem Benutzer
+    # Phase 3: Navigation (idempotent)
     OKW.StartApp        MeineApp
     OKW.SelectWindow    Login
 
-    # Navigation + Aktion (idempotent in Summe)
+    # Phase 4: Aktion ausführen
     OKW.SetValue        Benutzer    admin       # idempotent
     OKW.SetValue        Kennwort    geheim      # idempotent
-    OKW.ClickOn         Anmelden                # idempotent (Button)
+    OKW.ClickOn         Anmelden                # nicht idempotent: Login-Seite verschwindet
 
-    # Prüfung (immer idempotent)
+    # Phase 5: Akzeptanzkriterium prüfen (immer idempotent)
     OKW.SelectWindow    Dashboard
     OKW.VerifyValue     Willkommen    Hallo admin
 
     OKW.StopApp
 ```
 
-Jeder einzelne Schritt setzt einen definierten Zustand — nichts
-hängt davon ab, was vorher im Feld stand oder ob der Test schon
-einmal gelaufen ist.
+Die Eingaben setzen einen definierten Zustand — nichts hängt davon
+ab, was vorher im Feld stand oder ob der Test schon einmal gelaufen
+ist. `ClickOn Anmelden` ist für sich **nicht** idempotent: Nach dem
+Klick ist die Login-Seite verschwunden, ein zweiter Klick fände den
+Button nicht mehr. Das ist in Ordnung — der Klick gehört zur Aktion
+(Phase 4), läuft pro Durchlauf genau einmal, und `SelectWindow Dashboard` bestätigt den neuen Zustand.
+**In Summe** ist der Testfall idempotent: Er startet mit `StartApp`
+jedes Mal im selben Zustand.
 
 ## Signal vs. NOISE
 
@@ -169,17 +207,17 @@ Nicht-idempotente Keywords sind wichtig — sie lösen den eigentlichen
 Test aus. Ein `ClickOn Speichern` oder `DoubleClickOn Datensatz` ist
 die **Testaktion** selbst. Das ist **Signal**.
 
-Aber in der **Navigation zum Testzustand** sind nicht-idempotente
-Schritte ein potenzieller **NOISE-Erzeuger**: Wenn die Navigation
-zustandsabhängig ist, kann der Test bei Wiederholung scheitern —
-nicht weil der Test falsch ist, sondern weil die Navigation
-fragil ist.
+Aber in den Phasen **Initialisieren, Testdaten und Navigation** sind
+nicht-idempotente Schritte ein potenzieller **NOISE-Erzeuger**: Hängen
+sie vom Ausgangszustand ab, kann der Test bei Wiederholung scheitern —
+nicht weil der Test falsch ist, sondern weil der Weg in den
+Testzustand fragil ist.
 
 | Phase | Idempotent? | Warum |
 |---|---|---|
-| Navigation | **Muss** idempotent sein | Sonst NOISE: Testfehler durch fragile Navigation |
-| Testaktion | Darf nicht-idempotent sein | Das **ist** der Test — Signal |
-| Prüfung | Immer idempotent | `Verify*` liest nur, verändert nichts |
+| 1–3: Initialisieren, Testdaten, Navigation | **Muss** idempotent sein | Sonst NOISE: Testfehler durch fragilen Weg in den Testzustand |
+| 4: Aktion ausführen | Darf nicht-idempotent sein | Das **ist** der Test — Signal |
+| 5: Akzeptanzkriterium prüfen | Immer idempotent | `Verify*` liest nur, verändert nichts |
 
 **Beispiel — NOISE durch nicht-idempotente Navigation:**
 
@@ -201,6 +239,26 @@ VerifyValue     Status    Gespeichert   # Stabil
 
 Die Regel:
 
-> **Navigation** → idempotente Keywords verwenden (Signal).
-> **Testaktion** → das richtige Keyword für die Aktion (darf nicht-idempotent sein).
-> **Prüfung** → `Verify*` (immer idempotent).
+> **Phasen 1–3** (Initialisieren, Testdaten, Navigation) → idempotente Keywords verwenden.
+> **Phase 4** (Aktion ausführen) → das richtige Keyword für die Aktion (darf nicht-idempotent sein).
+> **Phase 5** (Akzeptanzkriterium prüfen) → `Verify*` (immer idempotent).
+
+!!! tip "Faustregel für die Testerstellung"
+    1. **Testzustand sicher und einfach erreichen** — die Schritte der
+       Phasen 1–3 so wählen, dass sie funktionieren, **egal welcher
+       Zustand vorher bestand**.
+    2. **Im Testzustand** (Phase 4) sind nicht-idempotente Eingaben legitim, wenn
+       sie gezielt eine Funktion stimulieren — z. B. Tastatursteuerung:
+
+        ```robot
+        TypeKey         Suchfeld          Rob     # Eintippen löst die Vorschlagsliste aus
+        VerifyExists    Vorschlagsliste   YES
+        ```
+
+        Auf jeden nicht-idempotenten Schritt folgt **unmittelbar eine
+        Prüfung**: Die Reaktion des Systems wird gegen das erwartete
+        Ergebnis gehalten. Dieser Prüfschritt ist das eigentliche Signal.
+
+    3. Ob ein nicht-idempotenter Schritt sinnvoll ist, muss **im
+       Einzelfall** überlegt werden. Wichtig ist zunächst, die
+       Unterschiede zu kennen.
