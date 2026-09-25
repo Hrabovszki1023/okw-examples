@@ -6,6 +6,14 @@ Titel:
   class: okw_web_selenium.widgets.webse_label.WebSe_Label
   locator: { css: '[data-test="title"]' }
 
+Sortierung:
+  class: okw_web_selenium.widgets.webse_combobox.WebSe_ComboBox
+  locator: { css: 'select[data-test="product-sort-container"]' }
+
+ErsterProduktname:
+  class: okw_web_selenium.widgets.webse_label.WebSe_Label
+  locator: { xpath: '(//div[@data-test="inventory-item-name"])[1]' }
+
 ProduktKarte:
   __context__:
     locator: { xpath: '//div[@data-test="inventory-item"][.//div[@data-test="inventory-item-name" and text()="{ProduktName}"]]' }

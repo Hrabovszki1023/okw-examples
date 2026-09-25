@@ -50,6 +50,24 @@ SauceDemo SetContext                                                  | PASS |
 
 </details>
 
+<details>
+<summary>SauceDemo Sortierung -- 2 tests, 2 passed (click to expand)</summary>
+
+```
+==============================================================================
+SauceDemo Sortierung
+==============================================================================
+Produkte Nach Preis Aufsteigend Sortieren :: Sortiert die Produktl... | PASS |
+------------------------------------------------------------------------------
+Produkte Nach Name Absteigend Sortieren :: Sortiert die Produktlis... | PASS |
+------------------------------------------------------------------------------
+SauceDemo Sortierung                                                  | PASS |
+2 tests, 2 passed, 0 failed
+==============================================================================
+```
+
+</details>
+
 **Detailed Reports (interactive):**
 - [Log -- full keyword trace with screenshots](results/log.html)
 - [Report -- test summary](results/report.html)
@@ -75,6 +93,16 @@ inventory page are accessed by product name -- no per-product locators needed.
 - Verify prices of multiple products via SetContext
 - Add products to cart via SetContext
 
+### SauceDemo_Sortierung.robot
+
+Demonstrates `Select` on a native `<select>` ComboBox. The synchronisation
+of the selection is implemented once in `WebSe_ComboBox` -- the test case
+contains only the business statement.
+
+**Test cases:**
+- Sort products by price (low to high)
+- Sort products by name (Z to A)
+
 ## YAML Locator Files
 
 All GUI element definitions are in `locators/`. No hardcoded selectors appear
@@ -85,7 +113,7 @@ in the test code.
 | `MyAppChrome.yaml` | App definition: Chrome browser + all pages |
 | `Chrome.yaml` | Browser window (URL bar, maximize) |
 | `SauceDemoLogin.yaml` | Login page (username, password, login button, error message) |
-| `SauceDemoProducts.yaml` | Products page with `SetContext` for product cards |
+| `SauceDemoProducts.yaml` | Products page: sort ComboBox + `SetContext` for product cards |
 | `Allpages.yaml` | Page collector (add new pages here) |
 
 ## Comparison with Standard Approaches
