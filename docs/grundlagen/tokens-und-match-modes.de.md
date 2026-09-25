@@ -17,18 +17,45 @@ ${DELETE}    $DELETE
 `$IGNORE` macht ein Keyword zum No-Op. Der Schritt wird übersprungen (PASS),
 ohne etwas auszuführen.
 
+Seine Stärke zeigt `$IGNORE` als **Standardwert eines Parameters** in
+einem High-Level Keyword. Das Keyword `Anmelden` bedient alle vier
+Felder der Anmeldemaske — `Mandant` und `Sprache` sind optional und
+stehen standardmäßig auf `${IGNORE}`:
+
 ```robot
+*** Variables ***
+${IGNORE}    $IGNORE
+
+*** Keywords ***
+Anmelden
+    [Arguments]    ${Benutzer}    ${Kennwort}    ${Mandant}=${IGNORE}    ${Sprache}=${IGNORE}
+    OKW.SetValue       Mandant     ${Mandant}
+    OKW.SetValue       Benutzer    ${Benutzer}
+    OKW.SetValue       Kennwort    ${Kennwort}
+    OKW.SetValue       Sprache     ${Sprache}
+    OKW.ClickOn        Anmelden
+
 *** Test Cases ***
 Anmeldung ohne Mandant und Sprache
-    OKW.SetValue       Mandant     ${IGNORE}       # Wird übersprungen
-    OKW.SetValue       Benutzer    TESTUSER
-    OKW.SetValue       Kennwort    geheim123
-    OKW.SetValue       Sprache     ${IGNORE}       # Wird übersprungen
-    OKW.ClickOn        Anmelden
+    Anmelden    TESTUSER    geheim123                                # Mandant, Sprache: übersprungen
+
+Anmeldung mit Mandant und Sprache
+    Anmelden    TESTUSER    geheim123    Mandant=100    Sprache=DE
 ```
 
-**Warum?** Ohne `$IGNORE` bräuchte man IF-Anweisungen oder separate
-Testfälle. Mit `$IGNORE` bleibt der Testablauf linear — kein
+Wird ein optionaler Parameter nicht übergeben, bekommt `SetValue` den
+Wert `$IGNORE` — der Schritt wird übersprungen. Wird er übergeben, wird
+das Feld ganz normal befüllt.
+
+!!! note "Reihenfolge der Parameter"
+    In Robot Framework müssen Parameter mit Standardwert **nach** den
+    Pflichtparametern stehen. Deshalb stehen `Mandant` und `Sprache` am
+    Ende der Parameterliste — die Reihenfolge der `SetValue`-Zeilen im
+    Keyword folgt trotzdem der Maske.
+
+**Warum?** Ohne `$IGNORE` bräuchte das Keyword IF-Anweisungen für jedes
+optionale Feld — oder man bräuchte mehrere Varianten des Keywords. Mit
+`$IGNORE` bleibt **ein** Keyword linear und deckt alle Fälle ab — kein
 Kontrollfluss-NOISE.
 
 ### $EMPTY — Leeren Wert prüfen oder setzen
@@ -59,7 +86,9 @@ OKW.SetValue    Benutzername    ${DELETE}       # Feld aktiv leeren
 
 ## Match Modes
 
-Alle `Verify*`-Keywords unterstützen drei Modi zur Wertprüfung:
+Alle `Verify*`-Keywords unterstützen drei Modi zur Wertprüfung. Der Modus
+wird über die **Endung des Keywords** gewählt: ohne Endung = EXACT,
+`…WCM` = Wildcard, `…REGX` = regulärer Ausdruck.
 
 ### EXACT — Exakter Vergleich (Standard)
 
@@ -72,8 +101,8 @@ Der Wert muss exakt `admin` sein.
 ### WCM — Wildcard
 
 ```robot
-OKW.VerifyValue    Meldung    Anmeldung erfolgreich*
-OKW.VerifyValue    Datum      ??.??.2026
+OKW.VerifyValueWCM    Meldung    Anmeldung erfolgreich*
+OKW.VerifyValueWCM    Datum      ??.??.2026
 ```
 
 | Zeichen | Bedeutung |
@@ -84,7 +113,7 @@ OKW.VerifyValue    Datum      ??.??.2026
 ### REGX — Regulärer Ausdruck
 
 ```robot
-OKW.VerifyValue    Telefon    REGX:\\+49\\s\\d{3,4}\\s\\d+
+OKW.VerifyValueREGX    Telefon    \\+49\\s\\d{3,4}\\s\\d+
 ```
 
 Verwendet `re.search` mit Multiline-Flag.

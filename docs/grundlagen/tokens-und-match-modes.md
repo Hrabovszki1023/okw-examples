@@ -1,5 +1,5 @@
 ---
-source_hash: c048ff3748da
+source_hash: b263fabd93f6
 ---
 
 # Tokens and Match Modes
@@ -21,18 +21,45 @@ ${DELETE}    $DELETE
 `$IGNORE` turns a keyword into a no-op. The step is skipped (PASS)
 without executing anything.
 
+`$IGNORE` shows its strength as the **default value of a parameter** in
+a high-level keyword. The keyword `Anmelden` (log in) operates all four
+fields of the login form — `Mandant` (client) and `Sprache` (language)
+are optional and default to `${IGNORE}`:
+
 ```robot
+*** Variables ***
+${IGNORE}    $IGNORE
+
+*** Keywords ***
+Anmelden
+    [Arguments]    ${Benutzer}    ${Kennwort}    ${Mandant}=${IGNORE}    ${Sprache}=${IGNORE}
+    OKW.SetValue       Mandant     ${Mandant}
+    OKW.SetValue       Benutzer    ${Benutzer}
+    OKW.SetValue       Kennwort    ${Kennwort}
+    OKW.SetValue       Sprache     ${Sprache}
+    OKW.ClickOn        Anmelden
+
 *** Test Cases ***
 Anmeldung ohne Mandant und Sprache
-    OKW.SetValue       Mandant     ${IGNORE}       # Skipped
-    OKW.SetValue       Benutzer    TESTUSER
-    OKW.SetValue       Kennwort    geheim123
-    OKW.SetValue       Sprache     ${IGNORE}       # Skipped
-    OKW.ClickOn        Anmelden
+    Anmelden    TESTUSER    geheim123                                # Mandant, Sprache: skipped
+
+Anmeldung mit Mandant und Sprache
+    Anmelden    TESTUSER    geheim123    Mandant=100    Sprache=DE
 ```
 
-**Why?** Without `$IGNORE` you would need IF statements or separate test
-cases. With `$IGNORE` the test flow stays linear — no control-flow NOISE.
+If an optional parameter is not passed, `SetValue` receives `$IGNORE` —
+the step is skipped. If it is passed, the field is filled as usual.
+
+!!! note "Parameter order"
+    In Robot Framework, parameters with a default value must come
+    **after** the mandatory parameters. That is why `Mandant` and
+    `Sprache` are at the end of the parameter list — the order of the
+    `SetValue` lines inside the keyword still follows the form.
+
+**Why?** Without `$IGNORE` the keyword would need IF statements for every
+optional field — or several variants of the keyword. With `$IGNORE`
+**one** keyword stays linear and covers all cases — no control-flow
+NOISE.
 
 ### $EMPTY — Verify or Set an Empty Value
 
@@ -62,7 +89,9 @@ OKW.SetValue    Benutzername    ${DELETE}       # Actively clear the field
 
 ## Match Modes
 
-All `Verify*` keywords support three modes for value verification:
+All `Verify*` keywords support three modes for value verification. The
+mode is selected by the **keyword suffix**: no suffix = EXACT,
+`…WCM` = wildcard, `…REGX` = regular expression.
 
 ### EXACT — Exact Comparison (Default)
 
@@ -75,8 +104,8 @@ The value must be exactly `admin`.
 ### WCM — Wildcard
 
 ```robot
-OKW.VerifyValue    Meldung    Anmeldung erfolgreich*
-OKW.VerifyValue    Datum      ??.??.2026
+OKW.VerifyValueWCM    Meldung    Anmeldung erfolgreich*
+OKW.VerifyValueWCM    Datum      ??.??.2026
 ```
 
 | Character | Meaning |
@@ -87,7 +116,7 @@ OKW.VerifyValue    Datum      ??.??.2026
 ### REGX — Regular Expression
 
 ```robot
-OKW.VerifyValue    Telefon    REGX:\\+49\\s\\d{3,4}\\s\\d+
+OKW.VerifyValueREGX    Telefon    \\+49\\s\\d{3,4}\\s\\d+
 ```
 
 Uses `re.search` with the multiline flag.
