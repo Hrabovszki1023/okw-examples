@@ -1,5 +1,13 @@
 # Warum kein Page Object Model?
 
+!!! warning "POM ist nicht konform zu ISO/IEC/IEEE 29119-5"
+    Die Norm für Keyword-Driven Testing trennt **Domain Layer**,
+    **Decomposer** und **Test Interface Layer**. POM vermischt diese
+    Elemente in einer Page-Klasse: fachliche Methoden, Locatoren,
+    Interaktionslogik und Seitenwechsel. Damit kann POM die geforderte
+    Schichtentrennung strukturell nicht abbilden — OKW schon.
+    → Details: [ISO 29119-5: POM ist nicht normkonform](#iso-29119-5-pom-ist-nicht-normkonform)
+
 ## Was POM löst
 
 Das Page Object Model (POM) ist der Industriestandard für Selenium-Tests.
@@ -280,12 +288,12 @@ Page-Object-Pattern — mit eigener Struktur, eigenen Methoden,
 eigenen Konventionen.
 
 Der tiefere Grund: POM denkt in **Methodenaufrufen**
-(`LoginPage.enter_username("admin")`), nicht in abstrakten Keywords.
+(`LoginPage.enter_username("admin")`), nicht in Keywords.
 Eine Methode ist an ihre Klasse, ihre Technologie und ihre Seite
-gebunden. Ein **elementares Keyword** wie `SetValue Benutzername admin` ist
+gebunden. Ein **Low-Level Keyword** wie `SetValue Benutzername admin` ist
 technologieneutral — es beschreibt *was der Benutzer tut*, nicht
-*wie die Technik es umsetzt*. Aus elementaren Keywords baut man
-**abstrakte Keywords**, die fachliche Abläufe zusammenfassen:
+*wie die Technik es umsetzt*. Aus Low-Level Keywords baut man
+**High-Level Keywords**, die fachliche Abläufe zusammenfassen:
 
 ```robot
 Login Admin
@@ -294,10 +302,11 @@ Login Admin
     ClickOn     Anmelden
 ```
 
-`Login Admin` ist ein abstraktes Keyword — zusammengesetzt aus
-elementaren Keywords. Eine POM-Methode `LoginPage.login("admin", "geheim")`
-sieht ähnlich aus, ist aber an die Klasse `LoginPage` und deren
-Technologie gebunden. Das abstrakte Keyword ist frei davon.
+`Login Admin` ist ein High-Level Keyword (ISO 29119-5, §3.7) —
+zusammengesetzt aus Low-Level Keywords. Eine POM-Methode
+`LoginPage.login("admin", "geheim")` sieht ähnlich aus, ist aber an
+die Klasse `LoginPage` und deren Technologie gebunden. Das High-Level
+Keyword ist frei davon.
 
 OKW verwendet **dieselben Keywords** für alle Technologien:
 
@@ -349,6 +358,56 @@ SetValue    Geburtsdatum    15.09.2026
 Der Tester merkt nicht, dass hinter `Geburtsdatum` ein spezielles Widget
 steht. Das ist Signal vs. NOISE in Reinform.
 
+## ISO 29119-5: POM ist nicht normkonform
+
+Die **ISO/IEC/IEEE 29119-5:2024** definiert Keyword-Driven Testing als
+Ansatz mit getrennten Abstraktionsschichten:
+
+| ISO-Schicht | Zweck | OKW-Umsetzung | POM |
+|---|---|---|---|
+| **Domain Layer** (§5.2.2) | Fachliche Sprache, für Domänenexperten verständlich | `.robot`-Testfälle + High-Level User-Keywords | Existiert nicht als eigene Schicht |
+| **Decomposer** (§3.3) | Bricht High-Level Keywords auf Low-Level Keywords herunter | OKW-Core: Keyword-Dispatch + YAML-Loader + Widget-Auflösung | Existiert nicht |
+| **Test Interface Layer** (§5.2.3) | Technische Interaktion mit dem Testobjekt | Widget-Klassen + Adapter (Selenium, FlaUI, RemoteSwing, ...) | Page-Klasse (vermischt mit Domain-Logik) |
+
+**Das Kernproblem:** POM vermischt genau das, was die Norm trennen will.
+
+Eine Page-Klasse wie `LoginPage` enthält **gleichzeitig**:
+
+- **Fachliche Methoden** (`loginValidUser()`) → gehört in den Domain Layer
+- **Locatoren** (`By.ID, "user-name"`) → gehört in den Test Interface Layer
+- **Interaktionslogik** (`findElement`, `sendKeys`, `click`) → gehört in den Test Interface Layer
+- **Seitenwechsel** (`return new HomePage(driver)`) → gehört in den Decomposer
+
+Die ISO fordert Trennung — POM liefert einen Monolithen.
+
+**OKW bildet die ISO-Architektur ab:**
+
+```
+Domain Layer          Decomposer              Test Interface Layer
+─────────────         ──────────              ────────────────────
+.robot-Test     →     okw4robot         →     Widget + Adapter
+                      YAML-Loader
+SetValue              Benutzername:           WebSe_TextField
+  Benutzername   →      locator: {id: user}     .okw_set_value("admin")
+  admin                                         → element.send_keys()
+```
+
+Jede ISO-Schicht hat in OKW eine klare Entsprechung:
+
+- **Domain Layer** = `.robot`-Dateien (fachliche Sprache, kein Code)
+- **Decomposer** = OKW-Core + YAML (fachlicher Name → technischer Locator + Widget)
+- **Test Interface Layer** = Widget-Klassen + Adapter (technische Interaktion)
+
+Ein Technologiewechsel (z. B. Selenium → FlaUI) betrifft nur den Test
+Interface Layer — Domain Layer und Decomposer bleiben unverändert.
+Bei POM betrifft ein Technologiewechsel **alles**: neue Page-Klassen,
+neue Locatoren, neue Interaktionslogik, neue Tests.
+
+!!! info "Für regulierte Umgebungen"
+    In Branchen mit Normkonformitäts-Anforderungen (Automotive, Medizintechnik,
+    Finanzwesen) ist die ISO-Konformität von OKW ein direktes Argument:
+    Der Testansatz folgt einer internationalen Norm — POM nicht.
+
 ## Zusammenfassung
 
 | Kriterium | POM | OKW |
@@ -360,6 +419,8 @@ steht. Das ist Signal vs. NOISE in Reinform.
 | Technologien | Je eine POM-Implementierung pro Technologie | Alle über denselben Kontrakt |
 | Spezialfälle | Neue Methode in Page-Klasse | Widget-Ableitung, eine Methode überschreiben |
 | Pflege durch | Entwickler | Tester (YAML) + Entwickler (Widgets) |
+| Prüfaufwand bei KI-Generierung (Human in the Loop) | Hoch — Framework-Code mit Kontrollstrukturen, vielfach wiederholt | Gering — nur fachliche Keyword-Abfolge |
+| ISO 29119-5 konform? | Nein — keine Layer-Trennung, keine Keywords im Sinne der Norm | Ja — Domain Layer, Decomposer, Test Interface Layer |
 
 ## KI und Testautomatisierung: POM vs. OKW
 
@@ -372,7 +433,7 @@ grundlegend.
 | Aspekt | POM | OKW |
 |---|---|---|
 | Was muss generiert werden? | Java-Klasse mit Locatoren, Methoden, Konstruktor, Treiber-Referenz | YAML (Konfiguration) + .robot (Keywords) |
-| Bausteine vorhanden? | Nein — jede Page-Klasse wird von Grund auf geschrieben | Ja — elementare Keywords (`SetValue`, `ClickOn`, `VerifyValue`) sind fertige Bausteine |
+| Bausteine vorhanden? | Nein — jede Page-Klasse wird von Grund auf geschrieben | Ja — Low-Level Keywords (`SetValue`, `ClickOn`, `VerifyValue`) sind fertige Bausteine |
 | Fehlerraum | Groß — Kompilierfehler, falsche Vererbung, fehlende Imports, falsche Treiber-API | Klein — falscher Widget-Name oder Locator, sofort erkennbar |
 | Konsistenz | Variiert pro Projekt (Namenskonventionen, Base-Klassen, Hilfsmethoden) | Immer gleich — dieselben Keywords, dasselbe YAML-Schema |
 
@@ -392,6 +453,110 @@ Im POM-Review muss die KI (und der Mensch) zwischen Locatoren,
 Interaktionslogik und Seitenwechsel in derselben Klasse unterscheiden.
 Im OKW-Review sind das getrennte Dateien mit jeweils einer
 Verantwortung.
+
+### Human in the Loop: Der Mensch ist der Engpass
+
+Erzeugt eine KI Automatisierungsskripte und prüft ein Mensch das
+Ergebnis („Human in the Loop“), dann ist der **Mensch die langsamste
+Komponente**. Die KI generiert in Sekunden — die Prüfung dauert Minuten
+bis Stunden. Beschleunigen lässt sich der Prozess daher vor allem so:
+**Es muss möglichst wenig geprüft werden.**
+
+Wie viel ein Mensch prüfen muss, hängt davon ab, wie viel **neuer Code**
+entsteht. Bei POM erzeugt die KI Code. Bei OKW setzt sie **geprüfte
+Bausteine** zusammen.
+
+#### Beispiel aus der Praxis: Der SauceDemo-Shop
+
+Jede Interaktion mit einem GUI-Objekt muss **einmal** geprüft werden —
+z. B. ob die Auswahl in einer ComboBox richtig synchronisiert: Ist das
+Element bereit? Ist der Wert nach der Auswahl wirklich gesetzt?
+
+Wie oft das geprüft werden muss, zeigt ein öffentliches POM-Projekt für
+den Demo-Shop [saucedemo.com](https://www.saucedemo.com):
+[`InventoryPage.java`](https://github.com/Nagraggini/sauce-demo/blob/main/src/main/java/pages/InventoryPage.java) (Java + Selenium).
+
+**POM — was der Reviewer dort prüfen muss:**
+
+| GUI-Objekt | Umsetzung in der Page-Klasse | Prüfaufwand |
+|---|---|---|
+| Sortier-ComboBox | 4 fast identische Methoden (`changeOrderingAtoZ`, `…ZtoA`, `…LowtoHigh`, `…HightoLow`) — jede wiederholt Warten, Auswahl-Objekt bauen, Wert setzen | 4× dieselbe Synchronisation — für **eine** ComboBox |
+| Produktkarte | Der XPath „Karte mit Produktname X“ wird in 4 Methoden per String-Verkettung neu zusammengebaut | 4× derselbe Locator — mit Inkonsistenz: 3× `normalize-space()`, 1× `text()` |
+
+Die Inkonsistenz bei der Produktkarte ist typisch: Der Code sieht an
+jeder Stelle *fast* gleich aus. Genau deshalb rutscht der Unterschied
+im Review durch.
+
+**OKW — dieselben GUI-Objekte in
+[okw-examples](https://github.com/Hrabovszki1023/okw-examples/blob/master/selenium/saucedemo):**
+
+```yaml
+# locators/SauceDemoProducts.yaml (Auszug)
+Sortierung:
+  class: okw_web_selenium.widgets.webse_combobox.WebSe_ComboBox
+  locator: { css: 'select[data-test="product-sort-container"]' }
+
+ErsterProduktname:
+  class: okw_web_selenium.widgets.webse_label.WebSe_Label
+  locator: { xpath: '(//div[@data-test="inventory-item-name"])[1]' }
+
+ProduktKarte:
+  __context__:
+    locator: { xpath: '//div[@data-test="inventory-item"][.//div[@data-test="inventory-item-name" and text()="{ProduktName}"]]' }
+  Produktpreis:
+    class: okw_web_selenium.widgets.webse_label.WebSe_Label
+    locator: { xpath: './/div[@data-test="inventory-item-price"]' }
+  InDenWarenkorb:
+    class: okw_web_selenium.widgets.webse_button.WebSe_Button
+    locator: { xpath: './/button' }
+```
+
+```robot
+# tests/SauceDemo_Sortierung.robot + SauceDemo_SetContext.robot (Auszug)
+SelectWindow   SauceDemoProducts
+Select         Sortierung           Price (low to high)
+VerifyValue    ErsterProduktname    Sauce Labs Onesie
+
+SetContext     ProduktKarte         Sauce Labs Backpack
+VerifyValue    Produktpreis         $29.99
+ClickOn        InDenWarenkorb
+```
+
+| GUI-Objekt | POM | OKW |
+|---|---|---|
+| Sortier-ComboBox | 4 Methoden, 4× Synchronisation prüfen | 1 YAML-Eintrag — Synchronisation **einmal** in `WebSe_ComboBox` geprüft |
+| Produktkarte | 4× Locator per String-Verkettung, inkonsistent | 1× `__context__` — alle Kind-Widgets nutzen ihn |
+| Testfall | Methodenaufrufe, Details in der Page-Klasse | Jede Zeile eine fachliche Aussage |
+
+Der Reviewer prüft im OKW-Testfall nur noch: Ist das der richtige Ablauf?
+
+#### Wo bei OKW geprüft wird
+
+| Ebene | DRY auf … | Was geprüft werden muss | Wie oft |
+|---|---|---|---|
+| **Widget** | GUI-Objekt-Ebene | Interaktion + Synchronisation (z. B. `Select` in ComboBox) | **Einmal** pro Widget-Typ |
+| **Testfall** | Testfall-Ebene — Low-Level und logisch nachvollziehbare High-Level Keywords, möglichst ohne Kontrollstrukturen | Nur die fachliche Abfolge | Pro Testfall, wenige Zeilen |
+| **YAML** | Locator-Ebene | Fachlicher Name → technischer Locator | Pro GUI-Objekt, reine Daten |
+
+Der Mensch prüft bei OKW die Technik **einmal** — danach nur noch,
+**was** getestet wird, nicht mehr, **wie** die Technik es umsetzt.
+
+#### Qualität wächst mit dem Projekt
+
+Jeder Testfall, der ein Widget nutzt, testet das Widget mit. Fehler
+werden dadurch früh gefunden, **einmal** behoben und sind dann überall
+behoben. Widgets, Low-Level Keywords und die daraus gebauten High-Level
+Keywords weisen über den Projektverlauf **zunehmend weniger Fehler** auf.
+
+Bei POM ist das nicht gegeben: Dieselben Strukturen werden immer wieder
+neu gebaut — und jede neue Kopie kann neue Fehler enthalten.
+
+| Aspekt | POM | OKW |
+|---|---|---|
+| Prüfung der ComboBox-Synchronisation | *n*-mal — an jeder Stelle im Code (SauceDemo: 4× für eine ComboBox) | Einmal — im Widget |
+| Prüfvolumen pro neuem Testfall | Neuer Framework-Code inkl. Kontrollstrukturen | Wenige Keyword-Zeilen + ggf. YAML-Einträge |
+| Prüfaufwand bei wachsender Testbasis | Steigt mit jeder Seite und jedem Testfall | Steigt nur mit neuen Widget-Typen |
+| Fehlerrate über den Projektverlauf | Bleibt hoch — Strukturen werden immer neu gebaut | Sinkt — bewährte Bausteine werden wiederverwendet |
 
 ### Lernen und Prompt-Größe
 

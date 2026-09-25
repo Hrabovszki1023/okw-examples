@@ -4,6 +4,19 @@ Die Bibliothek `robotframework-okw-web-selenium` ist der OKW-Treiber für
 Webanwendungen. Sie verwendet Selenium WebDriver über die SeleniumLibrary
 für Robot Framework.
 
+Die meisten Selenium-Testsuiten haben dasselbe Problem: CSS-Selektoren,
+XPaths und Treiber-Aufrufe stehen direkt im Testcode. Ändert sich die
+Oberfläche, repariert man Locatoren in Dutzenden Dateien. Mit OKW
+enthält der Test nur noch **Signal** — was getestet wird. Locatoren und
+Treiber-Technik (**NOISE**) stehen in YAML und in Widget-Klassen.
+
+!!! info "ISO/IEC/IEEE 29119-5"
+    OKW setzt die Keyword-Architektur der ISO 29119-5 um:
+    **Domain Layer** (`.robot`-Test) → **Decomposer** (OKW-Core + YAML)
+    → **Test Interface Layer** (Widget + Selenium-Adapter).
+    Das Page Object Model tut das nicht —
+    siehe [Warum kein POM?](../../grundlagen/warum-kein-pom.md).
+
 ## Installation
 
 ```bash
@@ -16,7 +29,10 @@ Installiert automatisch `robotframework-okw4robot` (Core) und
 ## Erster Test: SauceDemo Login
 
 Dieses Beispiel zeigt den vollständigen Aufbau eines OKW-Web-Tests —
-vom YAML bis zum lauffähigen Testfall.
+vom YAML bis zum lauffähigen Testfall. Testobjekt ist der öffentliche
+Demo-Shop [saucedemo.com](https://www.saucedemo.com).
+
+![SauceDemo Login-Seite](images/01_saucedemo_login.png)
 
 ### Schritt 1: App-YAML anlegen
 
@@ -62,9 +78,17 @@ Fehlermeldung:
   locator: { css: '[data-test="error"]' }
 ```
 
-Beachte: Die YAML-Keys sind **Fachbegriffe** (`Benutzer`, `Passwort`,
-`Anmelden`), nicht technische IDs (`txtUser`, `btnLogin`). Die
-technischen Locatoren stehen nur im `locator`-Feld.
+Die YAML-Datei erfüllt zwei Aufgaben:
+
+1. **Fachliche Namen.** Der Test sagt `Benutzer` — einen Fachbegriff,
+   keine technische ID (`txtUser`, `btnLogin`). Die YAML bildet ihn auf
+   den konkreten Locator ab.
+2. **Widget-Verhalten.** `class` legt fest, *wie* ein Keyword auf dem
+   GUI-Objekt ausgeführt wird. Ein `TextField` weiß, wie `SetValue`
+   geht (löschen + eingeben), ein `Button`, wie `ClickOn` geht.
+
+Ändert sich ein `data-test`-Attribut, wird es hier **einmal** korrigiert —
+alle Testfälle laufen weiter.
 
 ### Schritt 3: Seiten in Allpages sammeln
 
@@ -91,24 +115,28 @@ ${URL}    https://www.saucedemo.com
 *** Keywords ***
 Login Seite Oeffnen
     OnFailNOISE    StartApp       MyAppChrome
+
     OnFailNOISE    SelectWindow   Chrome
     OnFailNOISE    SetValue       URL    ${URL}
 
 Anmelden Mit
     [Arguments]    ${benutzer}    ${passwort}
+
     OnFailNOISE    SelectWindow   SauceDemoLogin
     SetValue       Benutzer    ${benutzer}
     SetValue       Passwort    ${passwort}
     ClickOn        Anmelden
 
 Login Erfolgreich
+
     OnFailNOISE    SelectWindow       SauceDemoProducts
-    VerifyValue    Titel    Products
+    VerifyValue        Titel    Products
 
 Login Fehlgeschlagen Mit Meldung
     [Arguments]    ${meldung}
+
     OnFailNOISE    SelectWindow       SauceDemoLogin
-    VerifyValue    Fehlermeldung    ${meldung}
+    VerifyValue        Fehlermeldung    ${meldung}
 
 *** Test Cases ***
 Login Standard User
@@ -117,14 +145,17 @@ Login Standard User
 
 Login Gesperrter Benutzer
     Anmelden Mit    locked_out_user    secret_sauce
-    Login Fehlgeschlagen Mit Meldung
-    ...    Epic sadface: Sorry, this user has been locked out.
+    Login Fehlgeschlagen Mit Meldung    Epic sadface: Sorry, this user has been locked out.
 
 Login Ohne Passwort
     Anmelden Mit    standard_user    ${EMPTY}
-    Login Fehlgeschlagen Mit Meldung
-    ...    Epic sadface: Password is required
+    Login Fehlgeschlagen Mit Meldung    Epic sadface: Password is required
 ```
+
+Keine Selektoren, keine Treiber-Aufrufe. `SetValue`, `ClickOn` und
+`VerifyValue` sind Low-Level Keywords — sie funktionieren für jede
+GUI-Technologie. `Anmelden Mit` ist ein High-Level Keyword, das das
+Testprojekt selbst aus ihnen zusammensetzt.
 
 ### Schritt 5: Ausführen
 
@@ -133,6 +164,22 @@ robot tests/SauceDemo_Login.robot
 ```
 
 `StartApp MyAppChrome` öffnet Chrome automatisch. `StopApp` schließt ihn.
+
+### 11 Testfälle, keine Redundanz
+
+Die vollständige Suite
+[`SauceDemo_Login.robot`](https://github.com/Hrabovszki1023/okw-examples/blob/master/selenium/saucedemo/tests/SauceDemo_Login.robot)
+deckt den Login komplett ab:
+
+| Testfälle | Was sie prüfen |
+|---|---|
+| 5 gültige Logins | standard, problem, performance_glitch, error, visual user |
+| 1 gesperrter Benutzer | Fehlermeldung |
+| 2 falsche Zugangsdaten | Unbekannter Benutzer, falsches Passwort |
+| 3 leere Felder | Ohne Benutzer, ohne Passwort, beides leer |
+
+Jeder Testfall hat zwei Zeilen. Die YAML ändert sich nie, die Keywords
+ändern sich nie — nur die Testdaten variieren.
 
 ---
 
@@ -143,12 +190,12 @@ Setup-Schritte wie `StartApp`, `SelectWindow` und URL-Eingabe sind
 soll der Testfall als NOISE markiert werden, nicht als echter Fehler.
 
 `OnFailNOISE` bewirkt genau das: Schlägt das Keyword fehl, wird der
-Test mit dem Tag `NOISE` markiert. Im Test-Setup ist jede Zeile mit
-`OnFailNOISE` gewrapped:
+Test mit dem Tag `NOISE` markiert.
 
 ```robot
 Login Seite Oeffnen
     OnFailNOISE    StartApp       MyAppChrome
+
     OnFailNOISE    SelectWindow   Chrome
     OnFailNOISE    SetValue       URL    ${URL}
 ```
@@ -165,8 +212,8 @@ Für Web-Tests empfiehlt sich eine Trennung in App, Browser und Seiten:
 
 ```
 locators/
-  Chrome.yaml              # Browser-Fenster (URL-Leiste, ...)
-  Firefox.yaml             # Browser-Fenster (URL-Leiste, ...)
+  Chrome.yaml               # Browser-Fenster (URL-Leiste, ...)
+  Firefox.yaml              # Browser-Fenster (URL-Leiste, ...)
   SauceDemoLogin.yaml       # Seite: Login
   SauceDemoProducts.yaml    # Seite: Produktübersicht
   Allpages.yaml             # Sammelt alle Seiten per !include
@@ -184,236 +231,13 @@ locators/
 
 ---
 
-## Widget-Klassen
+## Weiter in diesem Kapitel
 
-Jede Widget-Klasse kapselt eine HTML-Elementfamilie:
-
-| Widget-Klasse | HTML-Elemente | Typische Keywords |
+| Seite | Thema | Demo-Seite |
 |---|---|---|
-| `WebSe_TextField` | `<input>`, `<textarea>` | SetValue, VerifyValue, TypeKey, Delete |
-| `WebSe_Button` | `<button>`, `<input type=button>` | ClickOn, VerifyCaption |
-| `WebSe_CheckBox` | `<input type=checkbox>` | ClickOn, SetValue, VerifyValue |
-| `WebSe_ComboBox` | `<select>`, Custom-Dropdowns | Select, VerifyValue |
-| `WebSe_ListBox` | `<select multiple>`, `<ul>` | Select, VerifyValue |
-| `WebSe_RadioList` | `<input type=radio>` | Select, VerifyValue |
-| `WebSe_Label` | `<span>`, `<div>`, `<p>`, `<label>` | VerifyValue, VerifyCaption |
-| `WebSe_Link` | `<a>` | ClickOn, VerifyCaption |
-| `WebSe_Table` | `<table>` | VerifyTableCellValue, LogTableCellValue |
-
-Die Widget-Klasse wird im YAML-Feld `class` festgelegt. Im Testcode
-taucht sie nie auf — der Test spricht nur Business-Sprache.
-
----
-
-## Locator-Strategien
-
-Das `locator`-Feld im YAML unterstützt alle Selenium-Strategien:
-
-| Strategie | Beispiel | Wann verwenden |
-|---|---|---|
-| `css` | `{ css: '[data-test="username"]' }` | Standard für die meisten Elemente |
-| `xpath` | `{ xpath: '//div[@class="price"]' }` | Textsuche, komplexe Hierarchien, SetContext |
-| `id` | `{ id: user-name }` | Wenn das Element eine stabile ID hat |
-| `name` | `{ name: password }` | HTML name-Attribut |
-
-**Empfehlung:** CSS für einfache Elemente, XPath wenn Text-Matching oder
-SetContext benötigt wird.
-
----
-
-## SetContext: Wiederholende Strukturen
-
-Web-Anwendungen enthalten häufig wiederholende Elemente — Produktkarten,
-Tabellenzeilen, Listeneinträge. `SetContext` grenzt nachfolgende
-Operationen auf eine Instanz ein.
-
-### YAML mit `__context__`
-
-```yaml
-# locators/SauceDemoProducts.yaml
-ProduktKarte:
-  __context__:
-    locator: { xpath: '//div[@data-test="inventory-item"]
-      [.//div[@data-test="inventory-item-name"
-      and text()="{ProduktName}"]]' }
-  Produktname:
-    class: okw_web_selenium.widgets.webse_label.WebSe_Label
-    locator: { xpath: './/div[@data-test="inventory-item-name"]' }
-  Produktpreis:
-    class: okw_web_selenium.widgets.webse_label.WebSe_Label
-    locator: { xpath: './/div[@data-test="inventory-item-price"]' }
-  InDenWarenkorb:
-    class: okw_web_selenium.widgets.webse_button.WebSe_Button
-    locator: { xpath: './/button' }
-```
-
-### Test
-
-```robot
-*** Keywords ***
-Produktpreis Pruefen
-    [Arguments]    ${produkt}    ${erwarteter_preis}
-    SetContext         ProduktKarte    ${produkt}
-    VerifyValue        Produktpreis    ${erwarteter_preis}
-
-*** Test Cases ***
-SetContext Produktpreise Pruefen
-    SauceDemo Oeffnen Und Anmelden
-    OnFailNOISE    SelectWindow   SauceDemoProducts
-
-    Produktpreis Pruefen    Sauce Labs Backpack      $29.99
-    Produktpreis Pruefen    Sauce Labs Bike Light    $9.99
-    Produktpreis Pruefen    Sauce Labs Bolt T-Shirt  $15.99
-```
-
-**So funktioniert es:**
-
-1. `SetContext ProduktKarte Sauce Labs Backpack` ersetzt `{ProduktName}`
-   im `__context__`-Locator → findet die richtige Produktkarte.
-2. `VerifyValue Produktpreis` nutzt den relativen Locator `.//div[...]` —
-   er wird innerhalb der gefundenen Karte ausgewertet.
-3. Der nächste `SetContext` wechselt zur nächsten Karte.
-
-!!! warning "Nur XPath"
-    SetContext erfordert XPath — sowohl für den `__context__`-Locator als
-    auch für die Kind-Locatoren. CSS-Selektoren können keinen Textinhalt
-    matchen und unterstützen keine relative Pfadkomposition.
-
----
-
-## iFrame-Unterstützung
-
-Wenn ein Widget innerhalb eines `<iframe>` liegt, wird das `iframe`-Attribut
-im YAML ergänzt. Der Adapter wechselt automatisch in den Frame — kein
-manuelles `switch_to.frame()` im Test.
-
-### YAML
-
-```yaml
-# locators/IFramePage.yaml
-Seitentitel:
-  class: okw_web_selenium.widgets.webse_label.WebSe_Label
-  locator: { xpath: '//h1' }
-
-EmailEingabe:
-  class: okw_web_selenium.widgets.webse_textfield.WebSe_TextField
-  iframe: { id: email-subscribe }
-  locator: { id: email }
-
-AbonnierenButton:
-  class: okw_web_selenium.widgets.webse_button.WebSe_Button
-  iframe: { id: email-subscribe }
-  locator: { id: btn-subscribe }
-
-Erfolgsmeldung:
-  class: okw_web_selenium.widgets.webse_label.WebSe_Label
-  iframe: { id: email-subscribe }
-  locator: { id: success-message }
-
-EditorBody:
-  class: okw_web_selenium.widgets.webse_label.WebSe_Label
-  iframe: { id: mce_0_ifr }
-  locator: { id: tinymce }
-```
-
-### Test
-
-```robot
-Email Abonnieren Erfolgreich
-    SetValue       EmailEingabe        test@example.com
-    ClickOn        AbonnierenButton
-    VerifyValue    Erfolgsmeldung      You are now subscribed!
-
-Zwischen Zwei IFrames Wechseln
-    VerifyValue       AbonnierenButton    Subscribe
-    VerifyValueWCM    EditorBody          *content goes here*
-    VerifyValueWCM    IFrameUeberschrift  *inbox*
-```
-
-Der Testcode kennt keine iFrames. Das `iframe`-Attribut im YAML reicht —
-der Adapter schaltet automatisch hin und zurück.
-
-**Regeln:**
-
-- `iframe` akzeptiert dieselben Locator-Strategien wie `locator`
-  (css, xpath, id, ...).
-- Verschachtelte iFrames (Frame im Frame) werden nicht unterstützt.
-- Wenn zwei Widgets denselben iFrame nutzen, wird nur einmal gewechselt.
-
----
-
-## Hover (MoveOver)
-
-Manche Elemente werden erst sichtbar, wenn die Maus darüber fährt.
-`MoveOver` bewegt den Mauszeiger auf ein Widget.
-
-```robot
-MoveOver       Profilbild
-VerifyValue    ProfilInfo    View profile
-```
-
----
-
-## Match Modes: Exakt, Wildcard, Regex
-
-Alle `Verify*`-Keywords unterstützen drei Matching-Modi:
-
-```robot
-# Exakte Übereinstimmung (Standard)
-VerifyValue        Titel    Products
-
-# Wildcard: * = beliebige Zeichen, ? = ein Zeichen
-VerifyValueWCM     Seitentitel    *IFrame*
-
-# Regulärer Ausdruck
-VerifyValueREGX    Preis    \$\d+\.\d{2}
-```
-
----
-
-## Web-spezifische Keywords
-
-Diese Keywords gibt es nur in der Selenium-Bibliothek:
-
-| Keyword | Beschreibung |
-|---|---|
-| `ExecuteJS` | JavaScript im Browser-Kontext ausführen |
-| `RemoveAds` | Werbe-Iframes/Overlays entfernen (per JS + MutationObserver) |
-
-### RemoveAds
-
-Entfernt Werbeelemente von der aktuellen Seite. Ein `MutationObserver`
-wird installiert, der auch nachgeladene Ads entfernt.
-
-```robot
-# Standard (Google Ads):
-OnFailIgnoreNOISE    RemoveAds
-
-# Projektspezifische Selektoren:
-OnFailIgnoreNOISE    RemoveAds    div.custom-banner    iframe[src*="ad-network"]
-```
-
-Am besten im Test-Setup mit `OnFailIgnoreNOISE` — wenn keine Ads da sind,
-passiert nichts.
-
----
-
-## Lauffähige Beispiele
-
-Alle Beispiele aus diesem Kapitel stammen aus dem okw-examples Repository:
-
-| Beispiel | Was es zeigt |
-|---|---|
-| [SauceDemo Login](https://github.com/Hrabovszki1023/okw-examples/tree/main/selenium/saucedemo) | Login, Fehlerbehandlung, OnFailNOISE |
-| [SauceDemo SetContext](https://github.com/Hrabovszki1023/okw-examples/tree/main/selenium/saucedemo) | Wiederholende Produktkarten |
-| [ExpandTesting IFrame](https://github.com/Hrabovszki1023/okw-examples/tree/main/selenium/expandtesting) | iFrame-Wechsel, Email-Subscribe |
-| [ExpandTesting DynamicTable](https://github.com/Hrabovszki1023/okw-examples/tree/main/selenium/expandtesting) | Dynamische Tabellen |
-| [ExpandTesting Hovers](https://github.com/Hrabovszki1023/okw-examples/tree/main/selenium/expandtesting) | MoveOver, Hover-Aktionen |
-| [The Internet](https://github.com/Hrabovszki1023/okw-examples/tree/main/selenium/the-internet) | Login, Checkboxen, Dropdown, Tabellen |
-
-```bash
-git clone https://github.com/Hrabovszki1023/okw-examples.git
-cd okw-examples/selenium/saucedemo
-pip install robotframework-okw-web-selenium
-robot tests/
-```
+| [Wiederholende Strukturen](setcontext.md) | Produktkarten mit `SetContext` | saucedemo.com |
+| [Shadow DOM und iFrames](shadow-dom-iframe.md) | Isolationsgrenzen ohne Testcode-Änderung | practice.expandtesting.com |
+| [Drag & Drop](drag-and-drop.md) | HTML5 Drag & Drop, das Selenium nicht auslöst | practice.expandtesting.com |
+| [Tabellen](tabellen.md) | Zellen über Header-Namen statt Positionen | practice.expandtesting.com |
+| [Hover](hover.md) | Elemente, die erst bei Mausberührung erscheinen | practice.expandtesting.com |
+| [Referenz](referenz.md) | Widget-Klassen, Locator-Strategien, Match Modes, Web-Keywords | – |

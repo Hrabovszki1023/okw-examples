@@ -80,3 +80,6 @@ Produkt in den Warenkorb legen
 | Einmalige Elemente (Login-Felder, Buttons) | Normales Widget in YAML |
 | Wiederholende Strukturen (Karten, Zeilen, Listen) | `SetContext` |
 | Tabellen mit festen Spalten | Table-Widget (wenn verfügbar) oder `SetContext` |
+
+Praxisbeispiele siehe
+[Web Selenium → Wiederholende Strukturen](../gui/web-selenium/setcontext.md).

@@ -1,25 +1,25 @@
-site_name: OKW4Robot Handbuch
-site_description: Benutzerhandbuch für das OKW4Robot Keyword-Framework
+site_name: OKW4Robot Manual
+site_description: User manual for the OKW4Robot keyword framework
 site_url: https://hrabovszki1023.github.io/okw-examples/
 repo_url: https://github.com/Hrabovszki1023/okw-examples
 repo_name: okw-examples
 
 theme:
   name: material
-  language: de
+  language: en
   palette:
     - scheme: default
       primary: indigo
       accent: indigo
       toggle:
         icon: material/brightness-7
-        name: Dunkles Design
+        name: Dark mode
     - scheme: slate
       primary: indigo
       accent: indigo
       toggle:
         icon: material/brightness-4
-        name: Helles Design
+        name: Light mode
   features:
     - navigation.sections
     - navigation.expand
@@ -39,29 +39,77 @@ markdown_extensions:
   - attr_list
   - tables
 
+validation:
+  links:
+    anchors: warn
+
+plugins:
+  - search
+  - i18n:
+      docs_structure: suffix
+      fallback_to_default: true
+      reconfigure_material: true
+      reconfigure_search: true
+      languages:
+        - locale: en
+          name: English
+          default: true
+          build: true
+        - locale: de
+          name: Deutsch
+          build: true
+          site_name: OKW4Robot Handbuch
+          site_description: Benutzerhandbuch für das OKW4Robot Keyword-Framework
+          nav_translations:
+            Home: Startseite
+            Basics: Grundlagen
+            Why Not Page Object Model?: Warum kein Page Object Model?
+            GUI Objects: GUI-Objekte
+            YAML Locators: YAML-Locator
+            Idempotency: Idempotenz
+            Tokens and Match Modes: Tokens und Match Modes
+            GUI Libraries: GUI-Bibliotheken
+            Getting Started: Einstieg
+            Repeating Structures: Wiederholende Strukturen
+            Shadow DOM and iFrames: Shadow DOM und iFrames
+            Tables: Tabellen
+            Reference: Referenz
+            Environment Libraries: Umgebungs-Bibliotheken
+            Special Libraries: Spezial-Bibliotheken
+            Interplay: Zusammenspiel
+            Combining Libraries: Bibliotheken kombinieren
+            End-to-End Example: End-to-End-Beispiel
+
 nav:
-  - Startseite: index.md
-  - Grundlagen:
+  - Home: index.md
+  - Basics:
     - Signal vs. NOISE: grundlagen/signal-vs-noise.md
-    - Warum kein Page Object Model?: grundlagen/warum-kein-pom.md
+    - Why Not Page Object Model?: grundlagen/warum-kein-pom.md
     - Keywords: grundlagen/keywords.md
-    - GUI-Objekte: grundlagen/gui-objekte.md
-    - YAML-Locator: grundlagen/yaml-locator.md
-    - Idempotenz: grundlagen/idempotenz.md
-    - Tokens und Match Modes: grundlagen/tokens-und-match-modes.md
+    - GUI Objects: grundlagen/gui-objekte.md
+    - YAML Locators: grundlagen/yaml-locator.md
+    - Idempotency: grundlagen/idempotenz.md
+    - Tokens and Match Modes: grundlagen/tokens-und-match-modes.md
     - SetContext: grundlagen/setcontext.md
-  - GUI-Bibliotheken:
-    - Web Selenium: gui/web-selenium.md
+  - GUI Libraries:
+    - Web Selenium:
+      - Getting Started: gui/web-selenium/index.md
+      - Repeating Structures: gui/web-selenium/setcontext.md
+      - Shadow DOM and iFrames: gui/web-selenium/shadow-dom-iframe.md
+      - Drag & Drop: gui/web-selenium/drag-and-drop.md
+      - Tables: gui/web-selenium/tabellen.md
+      - Hover: gui/web-selenium/hover.md
+      - Reference: gui/web-selenium/referenz.md
     - Java RemoteSwing: gui/java-remoteswing.md
     - SAP GUI: gui/sap-gui.md
-  - Umgebungs-Bibliotheken:
+  - Environment Libraries:
     - Docker: umgebungen/docker.md
     - Proxmox: umgebungen/proxmox.md
-  - Spezial-Bibliotheken:
+  - Special Libraries:
     - REST API: spezial/rest-api.md
     - SSH: spezial/ssh.md
     - Kafka: spezial/kafka.md
-  - Zusammenspiel:
-    - Bibliotheken kombinieren: zusammenspiel/kombinieren.md
-    - End-to-End-Beispiel: zusammenspiel/end-to-end.md
-    - CI/CD-Pipeline: zusammenspiel/ci-cd.md
+  - Interplay:
+    - Combining Libraries: zusammenspiel/kombinieren.md
+    - End-to-End Example: zusammenspiel/end-to-end.md
+    - CI/CD Pipeline: zusammenspiel/ci-cd.md

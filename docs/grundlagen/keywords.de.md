@@ -86,6 +86,71 @@ Tabellen haben eigene Keywords, die über Zeile/Spalte oder Spaltenüberschrifte
 | `LogTableCellValue` | Tabelle, Zeile, Spalte | Zellenwert ins Protokoll |
 | `MemorizeTableCellValue` | Tabelle, Zeile, Spalte, Schlüssel | Zellenwert merken |
 
+## Low-Level vs. High-Level Keywords (ISO/IEC/IEEE 29119-5)
+
+OKW übernimmt die Keyword-Terminologie aus **ISO/IEC/IEEE 29119-5:2024**
+(*Software Testing — Part 5: Keyword-driven testing*) statt eigener
+Begriffe — damit ist die Einordnung normativ belegt, nicht nur
+Konvention.
+
+| ISO-Begriff (§) | Definition (sinngemäß) | Entspricht bei OKW |
+|---|---|---|
+| **low-level keyword** (§3.14) | Deckt nur eine oder wenige einfache Aktionen ab, ist **nicht** aus anderen Keywords zusammengesetzt | Die eingebauten OKW-Keywords selbst: `SetValue`, `ClickOn`, `VerifyValue`, ... (siehe Übersicht oben) |
+| **high-level keyword** (§3.7) | Komplexe, aus anderen Keywords komponierbare Aktivität, gedacht für Domänenexperten | Ein **Robot-Framework-User-Keyword**, das mehrere OKW-Keywords zu einem Geschäftsvorfall kombiniert (z.B. `Anmelden` als Wrapper um `SetValue`+`SetValue`+`ClickOn`) |
+| **composite keyword** (§3.2) | Strukturmerkmal: besteht aus ≥2 anderen Keywords (unabhängig von der Abstraktionsebene) | Jedes User-Keyword, das andere Keywords aufruft — kann selbst wieder low-level oder high-level sein |
+
+**Wichtig:** *composite* ist ein reines Bauprinzip ("woraus besteht es"),
+*high-level/low-level* beschreibt die Abstraktionsebene ("wer benutzt
+es"). Ein composite keyword kann technisch bleiben (Zwischenschicht)
+oder geschäftsseitig sein (Domänenschicht) — beides ist laut Norm
+zulässig. Auch ein **Testfall** ist im Grunde ein composite keyword —
+er besteht aus einer Folge von Keywords, die zusammen einen
+Geschäftsvorfall abbilden.
+
+**Konsequenz für OKW:** Die Bibliothek selbst liefert ausschließlich
+**low-level keywords** — das ist bewusst so, siehe [Signal vs.
+NOISE](signal-vs-noise.md).
+
+> OKW liefert die Ziegelsteine (low-level keywords), nicht das
+> fertige Gebäude. Welche Baugruppen (high-level/composite keywords)
+> daraus entstehen, entscheidet jedes Projekt selbst — OKW kennt das
+> Gebäude gar nicht. High-level/composite Keywords entstehen
+projektspezifisch über Robot Framework `*** Keywords ***`-Definitionen,
+die OKW-Keywords kombinieren:
+
+!!! warning "Empfehlung: Testfälle direkt aus Low-Level Keywords"
+    Testfälle, die direkt aus Low-Level Keywords bestehen, bilden
+    **jede Benutzeraktion als eigene Zeile** ab. Das macht sie
+    als Sequenz am leichtesten nachvollziehbar — sowohl für den
+    Autor als auch für Reviewer und bei der Fehleranalyse.
+
+    Verschachtelte High-Level Keywords (Keyword ruft Keyword ruft
+    Keyword) werden ab der zweiten Ebene schwer nachvollziehbar:
+    Man muss in jedes Keyword hineinspringen, um den tatsächlichen
+    Ablauf zu verstehen. Das ist **NOISE** — nicht im Testcode
+    selbst, sondern im Kopf des Lesers.
+
+    High-Level Keywords sind trotzdem nützlich — z. B. als
+    Setup/Teardown oder für wiederkehrende Navigationsblöcke.
+    Aber der **Testkern** (Eingabe + Prüfung) sollte aus
+    Low-Level Keywords bestehen, damit die Benutzeraktivitäten
+    transparent bleiben.
+
+```robot
+*** Keywords ***
+Anmelden
+    [Arguments]    ${Benutzer}    ${Kennwort}
+    OKW.SetValue       Benutzer     ${Benutzer}
+    OKW.SetValue        Kennwort    ${Kennwort}
+    OKW.ClickOn         Anmelden
+```
+
+`Anmelden` ist hier ein high-level/composite keyword im Sinne der
+Norm — zusammengesetzt aus drei OKW-low-level-keywords, für
+Domänenexperten lesbar, ohne dass OKW selbst dafür ein eigenes
+Sprachkonstrukt bräuchte. Robot Framework liefert den
+Komposition-Mechanismus bereits nativ.
+
 ## CamelCase-Konvention
 
 Keywords werden immer als **CamelCase ohne Leerzeichen** geschrieben:
