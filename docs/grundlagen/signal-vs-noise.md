@@ -1,27 +1,58 @@
 ---
-source_hash: accc66d7de19
+source_hash: f88489a7ac62
 ---
 
 # Signal vs. NOISE
 
 ## The Problem
 
-When a test case fails, there are two possible causes:
+**Signal** is every reliable statement about the state of the **system
+under test (SUT)** — a green test just as much as a test that finds a
+real defect. **NOISE** is a red test whose cause does **not** lie in the
+SUT, but in the script, the environment, the locator, the driver, the
+synchronisation or the test data.
 
-- **Signal** — the test found a real defect in the **system under test
-  (SUT)**. That is the goal of test automation.
-- **NOISE** — the failure is **not** in the SUT, but in the script, the
-  environment, the locator, the driver, the timeout. It is a failure
-  that must be analysed, but it does not reveal an SUT defect.
+| Symbol | Meaning | Value |
+|---|---|---|
+| **P** (Pass) | Test confirms the expected behavior of the SUT | Signal |
+| **F** (Fail) | Test reveals a real defect in the SUT | Signal |
+| **N** (NOISE) | Test fails, the cause is not in the SUT | Effort without insight |
 
-As long as all tests are green, NOISE goes unnoticed. But as soon as a
-test case fails, the analysis begins: is this a real SUT defect (Signal)
-or a technical problem (NOISE)?
+This gives two sums:
+
+- **Total signal:** S = P + F
+- **All red tests:** X = F + N
+
+**The core problem:** whoever looks at a red test run only sees X — not F
+and N separately. The separation has to be done by analysis. F is what
+you are looking for. N costs the same analysis, but yields no insight
+into the SUT.
+
+The larger the test suite, the smaller the NOISE rate must be —
+otherwise the analysis effort grows with every new test case. Stability
+is not a fixed property, but a **growing requirement**. If it is not
+met, test automation tips over: red test
+runs become normal, tests are ignored or simply re-run — **alarm
+fatigue**. What regression tests are for is lost: the reliable signal
+"green = everything is fine".
+
+### Where NOISE Comes From
 
 The more potential NOISE sources the test code contains — embedded
 locators, driver setup, wait logic, technical assertions — the more often
 tests fail without finding an SUT defect. And the longer the analysis
-takes to separate real defects from technical noise.
+takes to separate F from N. The following example shows where these
+sources hide — and how OKW removes them from the test case.
+
+!!! note "Signal or NOISE"
+    Strictly speaking, NOISE only arises when a test turns **red** (X)
+    and the cause does not lie in the SUT — then it is an **N**. A
+    locator in the test code or a wait is not a failure in itself.
+
+    When this manual says briefly "locators are NOISE" or "technical
+    code is NOISE", it always means: **a potential NOISE source** — a
+    place where an N can arise later. OKW's goal is to remove these
+    sources from the test case before they turn into an N.
 
 ## Example: Login Test
 

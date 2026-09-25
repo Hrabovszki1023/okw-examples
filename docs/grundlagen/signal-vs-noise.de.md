@@ -2,23 +2,56 @@
 
 ## Das Problem
 
-Wenn ein Testfall fehlschlägt, gibt es zwei mögliche Ursachen:
+**Signal** ist jede belastbare Aussage über den Zustand des **System
+Under Test (SUT)** — ein grüner Test genauso wie ein Test, der einen
+echten Fehler findet. **NOISE** ist ein roter Test, dessen Ursache
+**nicht** im SUT liegt, sondern im Skript, in der Umgebung, im Locator,
+im Treiber, in der Synchronisation oder in den Testdaten.
 
-- **Signal** — Der Test hat einen echten Fehler im **System Under Test
-  (SUT)** gefunden. Das ist das Ziel der Testautomatisierung.
-- **NOISE** — Der Fehler liegt **nicht** im SUT, sondern im Skript,
-  in der Umgebung, im Locator, im Treiber, im Timeout. Es ist ein
-  Fehler, der analysiert werden muss, aber keinen SUT-Fehler aufdeckt.
+| Kürzel | Bedeutung | Wert |
+|---|---|---|
+| **P** (Pass) | Test bestätigt das erwartete Verhalten des SUT | Signal |
+| **F** (Fail) | Test deckt einen echten Fehler im SUT auf | Signal |
+| **N** (NOISE) | Test schlägt fehl, die Ursache liegt nicht im SUT | Aufwand ohne Erkenntnis |
 
-Solange alle Tests grün sind, fällt NOISE nicht auf. Aber sobald ein
-Testfall fehlschlägt, beginnt die Analyse: Ist das ein echter
-SUT-Fehler (Signal) oder ein technisches Problem (NOISE)?
+Daraus folgen zwei Summen:
+
+- **Signal gesamt:** S = P + F
+- **Alle roten Tests:** X = F + N
+
+**Das Kernproblem:** Wer auf einen roten Testlauf schaut, sieht nur X —
+nicht F und N getrennt. Die Trennung muss erst durch Analyse geleistet
+werden. F ist das, was gesucht wird. N kostet dieselbe Analyse, liefert
+aber keine Erkenntnis über das SUT.
+
+Je größer die Testsuite, desto kleiner muss der NOISE-Anteil sein —
+sonst wächst der Analyseaufwand mit jedem neuen Testfall. Stabilität ist
+keine feste Eigenschaft, sondern eine **wachsende Anforderung**. Wird sie
+nicht erfüllt, kippt die Testautomatisierung:
+Rote Testläufe werden zur Gewohnheit, Tests werden ignoriert oder
+einfach neu gestartet — **Alarmmüdigkeit**. Damit geht genau das
+verloren, wofür Regressionstests da sind: das verlässliche Signal
+„grün = alles in Ordnung“.
+
+### Woher NOISE kommt
 
 Je mehr potenzielle NOISE-Quellen im Testcode stecken — eingebettete
 Locatoren, Treiber-Setup, Wait-Logik, technische Assertions — desto
 öfter schlagen Tests fehl, ohne einen SUT-Fehler zu finden. Und desto
-länger dauert die Analyse, um echte Fehler von technischem Rauschen
-zu unterscheiden.
+länger dauert die Analyse, um F von N zu trennen. Das folgende Beispiel
+zeigt, wo diese Quellen stecken — und wie OKW sie aus dem Testfall
+entfernt.
+
+!!! note "Signal oder NOISE"
+    Streng genommen entsteht NOISE erst, wenn ein Test **rot** wird (X)
+    und die Ursache nicht im SUT liegt — dann ist es ein **N**. Ein
+    Locator im Testcode oder ein Wait ist für sich noch kein Fehler.
+
+    Wenn dieses Handbuch kurz sagt „Locatoren sind NOISE“ oder
+    „technischer Code ist NOISE“, ist damit immer gemeint: **eine
+    mögliche NOISE-Quelle** — eine Stelle, an der später ein N
+    entstehen kann. Ziel von OKW ist, diese Quellen aus dem Testfall zu
+    entfernen, bevor daraus ein N wird.
 
 ## Beispiel: Login-Test
 

@@ -90,6 +90,31 @@ Alle `Verify*`-Keywords unterstützen drei Modi zur Wertprüfung. Der Modus
 wird über die **Endung des Keywords** gewählt: ohne Endung = EXACT,
 `…WCM` = Wildcard, `…REGX` = regulärer Ausdruck.
 
+!!! info "Warum drei Modi — und warum EXACT der Standard ist"
+    **EXACT — der Normalfall.** In den allermeisten Fällen will man
+    exakt prüfen: Steht genau der Name des Benutzers im Feld? Der
+    erwartete Text steht so im Test, wie er auf dem Bildschirm
+    erscheint — ohne Sonderzeichen, ohne Maskierung. Das ist am
+    einfachsten zu lesen und zu schreiben.
+
+    Gäbe es nur Wildcards, würde jeder Text mit `*` oder `?` zum
+    Problem: Man müsste diese Zeichen erst maskieren, um sie wörtlich
+    zu prüfen. An genau solchen Stellen scheitern Fachtester. EXACT
+    vergleicht dagegen **Zeichen für Zeichen, was dasteht**.
+
+    **WCM — wenn ein Muster reicht.** Soll nur die Form geprüft werden,
+    nicht der konkrete Wert — z. B. ein Datum (`??.??.????`) oder ein
+    Textanfang (`Anmeldung erfolgreich*`) — genügt ein Wildcard-Muster.
+
+    **REGX — für die harten Fälle.** Reicht auch das nicht, gibt es
+    reguläre Ausdrücke. Sie sind mächtig, setzen aber Spezialwissen
+    voraus.
+
+    **Faustregel:** So einfach wie möglich, so exakt wie nötig — erst
+    EXACT, dann WCM, REGX nur, wenn es nicht anders geht. Die Prüfung
+    muss sicher erkennen, ob der richtige Zielzustand erreicht wurde —
+    mehr nicht.
+
 ### EXACT — Exakter Vergleich (Standard)
 
 ```robot

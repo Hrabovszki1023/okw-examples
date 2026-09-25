@@ -1,5 +1,5 @@
 ---
-source_hash: b263fabd93f6
+source_hash: a039ca72f8b8
 ---
 
 # Tokens and Match Modes
@@ -92,6 +92,33 @@ OKW.SetValue    Benutzername    ${DELETE}       # Actively clear the field
 All `Verify*` keywords support three modes for value verification. The
 mode is selected by the **keyword suffix**: no suffix = EXACT,
 `…WCM` = wildcard, `…REGX` = regular expression.
+
+!!! info "Why three modes — and why EXACT is the default"
+    **EXACT — the normal case.** In the vast majority of cases you want
+    an exact check: does the field contain exactly the user's name? The
+    expected text appears in the test just as it appears on screen — no
+    special characters, no escaping. That is the easiest to read and to
+    write.
+
+    If there were only wildcards, every text containing `*` or `?` would
+    become a problem: you would first have to escape these characters to
+    check them literally. This is exactly where business testers fail.
+    EXACT, by contrast, compares **character by character what is
+    there**.
+
+    **WCM — when a pattern is enough.** If only the form should be
+    checked, not the concrete value — e.g. a date (`??.??.????`) or the
+    beginning of a text (`Anmeldung erfolgreich*`) — a wildcard pattern
+    is sufficient.
+
+    **REGX — for the hard cases.** If that is not enough either, there
+    are regular expressions. They are powerful, but require specialist
+    knowledge.
+
+    **Rule of thumb:** As simple as possible, as exact as necessary —
+    EXACT first, then WCM, REGX only when there is no other way. The
+    verification must reliably identify whether the right target state
+    has been reached — nothing more.
 
 ### EXACT — Exact Comparison (Default)
 
