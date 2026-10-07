@@ -16,5 +16,11 @@ site/
 # results/ directories contain committed reports for GitHub Pages
 # Do NOT ignore results/log.html and results/report.html
 
+# Browser extension binaries
+*.crx
+
+# Claude Code config
+.claude/
+
 # Handbuch images are published
 !docs/**/*.png

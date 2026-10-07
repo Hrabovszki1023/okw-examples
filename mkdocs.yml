@@ -66,7 +66,9 @@ plugins:
             Why Not Page Object Model?: Warum kein Page Object Model?
             GUI Objects: GUI-Objekte
             YAML Locators: YAML-Locator
+            Autonomous Test Cases: Autonome Testfälle
             Idempotency: Idempotenz
+            Testability: Testbarkeit
             Tokens and Match Modes: Tokens und Match Modes
             GUI Libraries: GUI-Bibliotheken
             Getting Started: Einstieg
@@ -84,11 +86,14 @@ nav:
   - Home: index.md
   - Basics:
     - Signal vs. NOISE: grundlagen/signal-vs-noise.md
+    - Strong Signal: grundlagen/strong-signal.md
+    - Autonomous Test Cases: grundlagen/autonome-testfaelle.md
     - Why Not Page Object Model?: grundlagen/warum-kein-pom.md
     - Keywords: grundlagen/keywords.md
     - GUI Objects: grundlagen/gui-objekte.md
     - YAML Locators: grundlagen/yaml-locator.md
     - Idempotency: grundlagen/idempotenz.md
+    - Testability: grundlagen/testbarkeit.md
     - Tokens and Match Modes: grundlagen/tokens-und-match-modes.md
     - SetContext: grundlagen/setcontext.md
   - GUI Libraries:
