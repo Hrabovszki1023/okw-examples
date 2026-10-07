@@ -1,0 +1,11 @@
+PostgresDB:
+  provider: docker
+  image: postgres
+  version: "17"
+  port: 5432
+  env:
+    POSTGRES_DB: testdb
+    POSTGRES_USER: testuser
+    POSTGRES_PASSWORD: testpass
+  healthcheck: "pg_isready -U testuser -d testdb"
+  timeout: 30s

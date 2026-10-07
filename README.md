@@ -37,8 +37,9 @@ robot tests/DynamicTable.robot
 ## Prerequisites
 
 - Python 3.10+
-- Chrome browser
-- [ChromeDriver](https://chromedriver.chromium.org/) matching your Chrome version
+- Chrome browser (for Selenium examples)
+- [ChromeDriver](https://chromedriver.chromium.org/) matching your Chrome version (for Selenium examples)
+- A reachable Docker host (for env-docker examples)
 
 ## Examples
 
@@ -47,6 +48,7 @@ robot tests/DynamicTable.robot
 | [SauceDemo Login](selenium/saucedemo/) | [saucedemo.com](https://www.saucedemo.com) | Login with valid/invalid/locked users, template-driven tests |
 | [SauceDemo SetContext](selenium/saucedemo/) | [saucedemo.com](https://www.saucedemo.com) | Repeating GUI structures (product cards) without per-item locators |
 | [Dynamic Table](selenium/expandtesting/) | [expandtesting.com](https://practice.expandtesting.com/dynamic-table) | Table access by header names, dynamic content |
+| [ENV Docker Basic](env-docker/basic/) | Docker host (local/remote) | Environment provisioning lifecycle with PostgreSQL |
 
 ## Project Structure
 
@@ -57,10 +59,20 @@ okw-examples/
     saucedemo/
       locators/            # YAML GUI object definitions
       tests/               # Robot Framework test suites
-      README.md            # Detailed description and comparison
+      README.md
     expandtesting/
       locators/
       tests/
+      README.md
+  rest-api/
+    expandtesting/tests/   # REST API test suites
+    dummyjson/tests/
+  ssh/
+    basic/tests/           # SSH command execution
+  env-docker/
+    basic/
+      components/          # YAML environment definitions
+      tests/               # ENV lifecycle tests
       README.md
 ```
 
