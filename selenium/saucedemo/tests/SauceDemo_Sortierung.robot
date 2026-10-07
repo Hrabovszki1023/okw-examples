@@ -1,5 +1,6 @@
 *** Settings ***
 Library    okw_web_selenium.library.OkwWebSeleniumLibrary
+Test Teardown    StopApp    MyAppChrome
 
 *** Variables ***
 ${URL}    https://www.saucedemo.com
@@ -28,7 +29,6 @@ Produkte Nach Preis Aufsteigend Sortieren
     VerifyValue    Sortierung           Price (low to high)
     VerifyValue    ErsterProduktname    Sauce Labs Onesie
 
-    StopApp        MyAppChrome
 
 Produkte Nach Name Absteigend Sortieren
     [Documentation]    Sortiert die Produktliste absteigend nach Name.
@@ -39,4 +39,3 @@ Produkte Nach Name Absteigend Sortieren
     VerifyValue    Sortierung           Name (Z to A)
     VerifyValue    ErsterProduktname    Test.allTheThings() T-Shirt (Red)
 
-    StopApp        MyAppChrome

@@ -2,5 +2,8 @@ MyAppChrome:
   __self__:
     class: okw_web_selenium.adapters.selenium_web.SeleniumWebAdapter
     browser: chrome
+    options:
+      extensions:
+        - extensions/uBlock-Chrome-Web-Store.crx
   Chrome: !include Chrome.yaml
   _pages: !include-merge Allpages.yaml

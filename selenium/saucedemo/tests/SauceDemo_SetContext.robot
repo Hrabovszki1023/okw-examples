@@ -1,5 +1,6 @@
 *** Settings ***
 Library    okw_web_selenium.library.OkwWebSeleniumLibrary
+Test Teardown    StopApp    MyAppChrome
 
 *** Variables ***
 ${URL}    https://www.saucedemo.com
@@ -43,7 +44,6 @@ SetContext Produktpreise Pruefen
     Produktpreis Pruefen    Sauce Labs Bolt T-Shirt  $15.99
     Produktpreis Pruefen    Sauce Labs Fleece Jacket  $49.99
     Produktpreis Pruefen    Sauce Labs Onesie        $7.99
-    StopApp        MyAppChrome
 
 SetContext Produkt In Warenkorb
     [Documentation]    Legt zwei Produkte ueber SetContext in den Warenkorb.
@@ -54,4 +54,5 @@ SetContext Produkt In Warenkorb
     OnFailNOISE    SelectWindow   SauceDemoProducts
     Produkt In Warenkorb Legen    Sauce Labs Backpack
     Produkt In Warenkorb Legen    Sauce Labs Bike Light
-    StopApp        MyAppChrome
+    # Phase 5: Verifikation
+    VerifyValue        WarenkorbAnzahl    2
