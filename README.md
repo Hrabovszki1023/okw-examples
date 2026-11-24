@@ -1,5 +1,7 @@
 # OKW Examples
 
+[![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](LICENSE)
+
 Executable examples for [OKW4Robot](https://github.com/Hrabovszki1023/robotframework-okw4robot) --
 a driver-agnostic keyword architecture for Robot Framework.
 
